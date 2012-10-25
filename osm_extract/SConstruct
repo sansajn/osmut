@@ -1,0 +1,41 @@
+# Pre skompilovanie release verzie zadaj prikaz '$ scons mode=release'.
+import os
+
+env = Environment()
+
+if os.name == 'nt':
+	release_ccflags = debug_ccflags = '/EHsc'
+else:
+	env['CC'] = 'clang'
+	env['CXX'] = 'clang++'
+	common_ccflags = ' -std=c++0x '
+	release_ccflags = common_ccflags + '-Os -DRELEASE '
+	debug_ccflags = common_ccflags + '-g -O0 -DDEBUG '
+
+build_mode = ARGUMENTS.get('mode', 'debug')
+if build_mode == 'debug':
+	ccflags = debug_ccflags
+else:
+	ccflags = release_ccflags
+
+
+print '+++Compiling in ' + build_mode + ' mode.+++'
+
+
+env.Library('irrXML', ['libs/irrxml-1.2/src/irrXML.cpp'])
+
+env.Program(
+	['osm_extract.cpp', 'reader_impl.cpp'],
+	CCFLAGS=ccflags,
+	CPPPATH='libs/irrxml-1.2/src',
+	LIBS='irrXML', 
+	LIBPATH='.'
+)
+
+env.Program(
+	['osm_extract_lite.cpp', 'reader_impl.o'],
+	CCFLAGS=ccflags,
+	CPPPATH='libs/irrxml-1.2/src',
+	LIBS='irrXML', 
+	LIBPATH='.'
+)
