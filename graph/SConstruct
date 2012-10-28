@@ -1,0 +1,23 @@
+import os
+
+env = Environment()
+cflags = ''
+
+if os.name == 'nt':
+	ccflags = '/EHsc'
+else:
+	env['CC'] = 'clang'
+	env['CXX'] = 'clang++'
+	ccflags = '-std=c++0x -g -O0 -DDEBUG'
+
+
+env.Library('irrXML', ['libs/irrxml-1.2/src/irrXML.cpp'])
+
+env.Program(
+	['graph_generator.cpp', 'reader_impl.cpp'],
+	CCFLAGS=ccflags,
+	CPPPATH='libs/irrxml-1.2/src',
+	LIBS='irrXML', 
+	LIBPATH='.'
+)
+
