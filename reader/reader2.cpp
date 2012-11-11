@@ -106,7 +106,12 @@ string value_buf;
 ifstream fin;
 
 int tabs;
-int embedded_deep = 0;
+
+
+int embedded_deep;
+int max_embedded_deep;
+void increase_deep();
+void decrease_deep();
 
 void init();
 void parse();
@@ -148,13 +153,16 @@ void init()
 	key_buf = "";
 	value_buf = "";
 	tabs = -1;
+	embedded_deep = 0;
+	max_embedded_deep = 0;
 }
 
 void parse()
 {
 	init();
 	osm();
-	cout << "parsing done!\n";
+	cout << 
+		boost::format("parsing done! (max-deep:%1%)\n") % max_embedded_deep;
 }
 
 void osm()
@@ -164,7 +172,7 @@ void osm()
 	cout << offset() << ":osm:\n";
 #endif
 
-	embedded_deep += 1;
+	increase_deep();
 	assert(embedded_deep < 100 && "we are too deep");
 
 	if (ch == '<')
@@ -197,8 +205,7 @@ void osm()
 		parser_error(
 			boost::format("tag must start with '<' not '%1%'") % ch);
 
-
-	embedded_deep -= 1;
+	decrease_deep();
 
 #ifdef PRINT_INPUT_TREE	
 	tabs -= 1;
@@ -388,3 +395,15 @@ void parser_error( boost::format const & msg )
 
 	exit(1);
 }
+
+void increase_deep()
+{
+	embedded_deep += 1;
+	max_embedded_deep = max(max_embedded_deep, embedded_deep);
+}
+
+void decrease_deep()
+{
+	embedded_deep -= 1;
+}
+
