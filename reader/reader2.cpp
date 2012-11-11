@@ -96,6 +96,9 @@ using std::string;
 using std::getline;
 using std::ifstream;
 
+
+#define _PRINT_INPUT_TREE	
+
 char ch;
 char next_ch;
 string key_buf;
@@ -103,6 +106,7 @@ string value_buf;
 ifstream fin;
 
 int tabs;
+int embedded_deep = 0;
 
 void init();
 void parse();
@@ -112,6 +116,7 @@ void start_tag();
 void end_tag();
 void key();
 void value();
+void processing_innstructions();
 void get_char();
 void get_raw_char();
 
@@ -154,38 +159,58 @@ void parse()
 
 void osm()
 {
+#ifdef PRINT_INPUT_TREE	
 	tabs += 1;
 	cout << offset() << ":osm:\n";
+#endif
+
+	embedded_deep += 1;
+	assert(embedded_deep < 100 && "we are too deep");
 
 	if (ch == '<')
 	{
+		if (next_ch == '?')
+			processing_innstructions();
+				
 		start_tag();
 
-		while (ch != '<' || next_ch != '/')
-		{
-			node();
-			if (ch == '\0')  // eof
-				return;
-		}
-
-		if (ch == '<')
-			get_char();  // eat /
+		if (ch == '/' && next_ch == '>')
+			end_tag();
 		else
-			parser_error(boost::format("expected <"));
+		{
+			while (ch != '<' || next_ch != '/')
+			{
+				node();
+				if (ch == '\0')  // eof
+					return;
+			}
 
-		end_tag();
+			if (ch == '<')
+				get_char();  // eat /
+			else
+				parser_error(boost::format("expected <"));
+
+			end_tag();
+		}
 	} 
 	else
 		parser_error(
 			boost::format("tag must start with '<' not '%1%'") % ch);
 
+
+	embedded_deep -= 1;
+
+#ifdef PRINT_INPUT_TREE	
 	tabs -= 1;
+#endif
 }
 
 void node()
 {
+#ifdef PRINT_INPUT_TREE	
 	tabs += 1;
 	cout << offset() << ":node:\n";
+#endif
 
 	osm();
 
@@ -194,11 +219,13 @@ void node()
 
 void start_tag()
 {
+#ifdef PRINT_INPUT_TREE	
 	tabs += 1;
 	cout << offset() << ":start-tag:\n";
+#endif
 
 	key();
-	while (ch != '>' && ch != '/' && next_ch != '>')
+	while (ch != '>' && (ch != '/' || next_ch != '>'))
 	{
 		key();
 		if (ch != '=')
@@ -207,14 +234,16 @@ void start_tag()
 	}
 
 	if (ch == '/' && next_ch == '>')
-		end_tag();
+		return;
 	else
 		get_char();
 }
 
 void end_tag()
 {
+#ifdef PRINT_INPUT_TREE	
 	cout << offset() << ":end-tag:\n";
+#endif
 
 	if (ch == '/' && next_ch == '>')
 		get_char();
@@ -227,13 +256,17 @@ void end_tag()
 
 	get_char();
 
+#ifdef PRINT_INPUT_TREE	
 	tabs -= 1;
+#endif
 }
 
 void key()
 {
+#ifdef PRINT_INPUT_TREE	
 	tabs += 1;
 	cout << offset() << ":key:";
+#endif
 
 	get_char();
 	if (isalpha(ch))
@@ -249,15 +282,18 @@ void key()
 		parser_error(
 			boost::format("key name must start with an alphabet"));
 
+#ifdef PRINT_INPUT_TREE	
 	cout << boost::format(" (key=%1%)\n") % key_buf;
-
 	tabs -= 1;
+#endif
 }
 
 void value()
 {
+#ifdef PRINT_INPUT_TREE	
 	tabs += 1;
 	cout << offset() << ":value:";
+#endif
 
 	get_char();
 	if (ch == '"')
@@ -280,9 +316,20 @@ void value()
 		parser_error(
 			boost::format("argument value must be enclosed in \""));
 
+#ifdef PRINT_INPUT_TREE	
 	cout << boost::format(" (value=\"%1%\")\n") % value_buf;
-
 	tabs -= 1;
+#endif
+}
+
+void processing_innstructions()
+{
+	// do nothing, just eat
+	get_char();
+	while (ch != '\0' && (ch != '?' || next_ch != '>'))
+		get_char();
+	get_char();
+	get_char();
 }
 
 
@@ -312,7 +359,7 @@ void get_raw_char()  //! prečíta nasledujúci znak (vrátane medzier)
 string offset()
 {
 	string s;
-	for (int i = 0; i < tabs; ++i)
+	for (int i = 0; i < max(tabs, 0); ++i)
 		s += ' ';
 	return s;
 }
