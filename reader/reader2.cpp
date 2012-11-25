@@ -97,7 +97,7 @@ using std::getline;
 using std::ifstream;
 
 
-#define _PRINT_INPUT_TREE	
+#define PRINT_INPUT_TREE	
 
 char ch;
 char next_ch;
