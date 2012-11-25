@@ -1,5 +1,5 @@
 /* recognized symbols: </, />, <?, ?>, text, name
-slower then libxml (slovakia.osm 2:26 vs 2:03) */
+with -O3 faster then libxml 2x (slovakia.osm 1:7 vs 2:03) */
 
 #include <algorithm>
 #include <cctype>
