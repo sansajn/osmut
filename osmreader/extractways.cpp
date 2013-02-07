@@ -1,7 +1,9 @@
 /* vylistuje všetky way-properties */
 #include <map>
 #include <set>
+#include <vector>
 #include <string>
+#include <memory>
 #include <iostream>
 #include <fstream>
 #include <boost/format.hpp>
@@ -9,6 +11,8 @@
 
 using std::map;
 using std::set;
+using std::vector;
+using std::unique_ptr;
 using std::cout;
 using std::string;
 using std::ofstream;
@@ -30,22 +34,25 @@ struct gps_coordinate
 	{}
 };
 
-typename map<int, gps_coordinate> nodes_type;
+typedef map<int, gps_coordinate> nodes_type;
 
 class kml_dumper
 {
 public:
 	kml_dumper(string const & fname, nodes_type const & nodes); 
-	void dump(way const & w);
-	bool ok() const {return _out.is_open();}
+	~kml_dumper();
+	void dump(way const & w, string const & name, string const & color);
+	bool ok() const {return _out->is_open();}
 
 private:
 	void line_string(vector<gps_coordinate> const & coords);
-	void header();
-	void footer();
+	void write_header();
+	void write_footer();
+	bool create_dumpfile();
 
-	ofstream _out;
 	nodes_type const & _nodes;
+	string _outfname;
+	unique_ptr<ofstream> _out;
 };
 
 
@@ -84,7 +91,7 @@ int main(int argc, char * argv[])
 		if (w.tags)
 			for (auto & t : *w.tags)
 				if (t.first == key && t.second == value)
-					out.dump(w);
+					out.dump(w, "", "7f0000ff");
 		nways += 1;
 	}
 
@@ -98,24 +105,33 @@ int main(int argc, char * argv[])
 
 
 kml_dumper::kml_dumper(string const & fname, nodes_type const & nodes)
-	: _out(ofstream(fname.c_str())), _nodes(nodes)
+	: _nodes(nodes), _outfname(fname)
+{}
+
+bool kml_dumper::create_dumpfile()
 {
-	if (ok())
-		header();
+	_out.reset(new ofstream(_outfname.c_str()));
+	if (_out->is_open())
+		write_header();
+	return _out->is_open();
 }
 
 kml_dumper::~kml_dumper()
 {
 	if (ok())
-		footer();
+		write_footer();
 
-	_out.flush();
-	_out.close();
+	_out->flush();
+	_out->close();
 }
 
-void kml_dumper::dump(way const & w, string const & name, string const & color)
+void kml_dumper::dump(way const & w, string const & name, 
+	string const & color)
 {
-	_out << "<Placemark>\n"
+	if (!_out)
+		create_dumpfile();
+
+	*_out << "<Placemark>\n"
 		<< "<name>" << name << "</name>\n"
 		<< "<description></description>\n"
 		<< "<Style id=\"way\">\n"
@@ -127,38 +143,42 @@ void kml_dumper::dump(way const & w, string const & name, string const & color)
 
 	vector<gps_coordinate> coords;
 	for (auto & id : w.node_ids)
-		coords.push_back(_nodes[id]);
+	{
+		nodes_type::const_iterator it = _nodes.find(id);
+		if (it != _nodes.end())
+			coords.push_back(it->second);
+	}
 
 	line_string(coords);
 
-	_out << "</Placemark>\n";
+	*_out << "</Placemark>\n";
 }
 
 void kml_dumper::line_string(vector<gps_coordinate> const & coords)
 {
-	_out << "<LineString>\n"
+	*_out << "<LineString>\n"
 		<< "\t<extrude>1</extrude>\n"
 		<< "\t<tessellate>1</tessellate>\n"
 		<< "\t<coordinates>\n";
 
 	for (auto & c : coords)
-		_out << "\t\t" << get<0>(c) << "," << get<1>(c) << ",0\n";
+		*_out << "\t\t" << c.lat << "," << c.lon << ",0\n";
 
-	_out << "\t</coordinates>\n"
+	*_out << "\t</coordinates>\n"
 		<< "</LineString>\n";
 }
 
-void kml_dumper::header()
+void kml_dumper::write_header()
 {
-	_out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+	*_out << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 		<< "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n"
 		<< "<Document>\n";
 }
 
-void kml_dumper::footer()
+void kml_dumper::write_footer()
 {
-	_out << "<\Document>\n";
-		<< "<\kml>\n";
+	*_out << "</Document>\n"
+		<< "</kml>\n";
 }
 
 
