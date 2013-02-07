@@ -41,13 +41,13 @@ typedef osm_range<node_iterator> node_range;
 typedef osm_range<way_iterator> way_range;
 
 
-inline node_range make_node_r(irr::io::IrrXMLReader & xml, node & buf) 
+inline node_range make_node_r(osmut::parser & osm, node & buf) 
 {
-	return node_range(node_iterator(&xml, &buf), node_iterator());
+	return node_range(node_iterator(osm, buf), node_iterator());
 }
 
-inline way_range make_way_r(irr::io::IrrXMLReader & xml, way & buf)
+inline way_range make_way_r(osmut::parser & osm, way & buf)
 {
-	return way_range(way_iterator(&xml, &buf), way_iterator());
+	return way_range(way_iterator(osm, buf), way_iterator());
 }
 

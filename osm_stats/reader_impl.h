@@ -3,7 +3,7 @@
 #include <memory>
 #include <map>
 #include <string>
-#include <irrXML.h>
+#include "osm_parser.h"
 
 
 /* \note Ak node a wey majú krátkodobý charakter, nie je lepšie mapy 
@@ -46,21 +46,21 @@ struct node_reader
 	typedef node value_type;
 
 	//! Vráti true ak je reader schopný tag prečítať.
-	static bool tag(char const * node_name);
+	static bool tag(std::string const & node_name);
 
 	//! Vráti true ak boli už spracovane všetky podporovane tagy.
-	static bool stop_tag(char const * node_name);
+	static bool stop_tag(std::string const & node_name);
 
 	//! Prečíta tag.
-	static void read_tag(irr::io::IrrXMLReader & xml, node & n);
+	static void read_tag(osmut::parser & osm, node & n);
 };
 
 struct way_reader
 {
 	typedef way value_type;
 
-	static bool tag(char const * node_name);
-	static bool stop_tag(char const * node_name);
-	static void read_tag(irr::io::IrrXMLReader & xml, way & w);
+	static bool tag(std::string const & node_name);
+	static bool stop_tag(std::string const & node_name);
+	static void read_tag(osmut::parser & osm, way & w);
 };
 

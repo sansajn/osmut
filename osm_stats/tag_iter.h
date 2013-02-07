@@ -1,8 +1,8 @@
 #pragma once
 #include <cstring>
 #include <cassert>
-#include <irrXML.h>
 #include "osmff.h"
+#include "osm_parser.h"
 
 template <class ReaderPolicy>
 class tag_iterator
@@ -13,8 +13,8 @@ public:
 	typedef value_type & reference;
 	typedef value_type const & const_reference;
 
-	tag_iterator() : _xml(NULL), _buf(NULL) {}
-	tag_iterator(irr::io::IrrXMLReader * xml, value_type * buf);
+	tag_iterator() : _osm(nullptr), _buf(nullptr) {}
+	tag_iterator(osmut::parser & xml, value_type & buf);
 	tag_iterator & operator++() {next(); return *this;}
 	reference operator*() {return *_buf;}
 	const_reference & operator*() const {return *_buf;}
@@ -27,7 +27,7 @@ private:
 	bool process_node();
 
 private:
-	irr::io::IrrXMLReader * _xml;
+	osmut::parser * _osm;
 	value_type * _buf;
 };
 
@@ -39,15 +39,15 @@ bool operator!=(tag_iterator<ReaderPolicy> const & lhs,
 }
 
 template <class ReaderPolicy>
-tag_iterator<ReaderPolicy>::tag_iterator(irr::io::IrrXMLReader * xml, 
-	value_type * buf)	: _xml(xml), _buf(buf)
+tag_iterator<ReaderPolicy>::tag_iterator(osmut::parser & osm, 
+	value_type & buf)	: _osm(&osm), _buf(&buf)
 {
-	irr::io::EXML_NODE node_type = _xml->getNodeType();
+	osmut::parser::e_node node_type = _osm->node_type();
 
-	if (node_type == irr::io::EXN_ELEMENT && 
-		ReaderPolicy::tag(_xml->getNodeName()))
+	if (node_type == osmut::parser::start_node
+		&& ReaderPolicy::tag(_osm->node_name()))
 	{
-		ReaderPolicy::read_tag(*_xml, *buf);
+		ReaderPolicy::read_tag(*_osm, *_buf);
 	}
 	else
 		next();
@@ -56,43 +56,39 @@ tag_iterator<ReaderPolicy>::tag_iterator(irr::io::IrrXMLReader * xml,
 template <class ReaderPolicy>
 void tag_iterator<ReaderPolicy>::next()
 {
-	while (_buf && _xml && _xml->read() && !process_node())
+	while (_buf && _osm && _osm->read() && !process_node())
 		continue;
 }
 
 template <class ReaderPolicy>
 bool tag_iterator<ReaderPolicy>::process_node()
 {
-	char const * node_name = _xml->getNodeName();
+	std::string const & node_name = _osm->node_name();
 
-	switch (_xml->getNodeType())
+	switch (_osm->node_type())
 	{
-		case irr::io::EXN_ELEMENT:
+		case osmut::parser::start_node:
+		case osmut::parser::empty_node:
 		{
 			if (ReaderPolicy::tag(node_name))
-				ReaderPolicy::read_tag(*_xml, *_buf);
+				ReaderPolicy::read_tag(*_osm, *_buf);
 			else if (ReaderPolicy::stop_tag(node_name))  
-				_buf = NULL;  // end
+				_buf = nullptr;  // end
 			else
 				return false;
 
 			return true;
 		}
 
-		case irr::io::EXN_ELEMENT_END:
+		case osmut::parser::end_node:
 		{
-			if (strcmp(OSM_TAG, node_name) == 0)
-				_buf = NULL;
+			if (node_name == OSM_TAG)
+				_buf = nullptr;
 			else
 				return false;
 
 			return true;
 		}
-
-		case irr::io::EXN_TEXT:
-		case irr::io::EXN_COMMENT:
-		case irr::io::EXN_UNKNOWN:
-			return false;
 
 		default:
 			assert(false && "unexpected element type inside 'osm'");

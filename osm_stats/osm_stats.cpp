@@ -3,9 +3,10 @@
 #include <string>
 #include <boost/format.hpp>
 #include "osm_range.h"
+#include "osm_parser.h"
 using std::cout;
 using std::string;
-using namespace irr::io;
+using osmut::parser;
 
 struct stats
 {
@@ -23,10 +24,14 @@ int main(int argc, char * argv[])
 
 	string osm_fname = argv[1];
 
+/*	
 	IrrXMLReader * xml = createIrrXMLReader(osm_fname.c_str());
 	if (!xml)
 		unrecoverable_error(
 			boost::format("can not open input file '%1%'") % osm_fname);
+*/
+
+	parser osm(osm_fname.c_str());
 
 	stats st = {0};
 
@@ -39,7 +44,7 @@ int main(int argc, char * argv[])
 */
 
 	node nodebuf;
-	for (node_iterator node_it(xml, &nodebuf); node_it != node_iterator(); 
+	for (node_iterator node_it(osm, nodebuf); node_it != node_iterator(); 
 		++node_it)
 	{
 		st.nodes += 1;
@@ -49,15 +54,13 @@ int main(int argc, char * argv[])
 	cout << "reading ways ..." << std::flush;
 
 	way waybuf;
-	for (auto r = make_way_r(*xml, waybuf); r; ++r)
+	for (auto r = make_way_r(osm, waybuf); r; ++r)
 		st.ways += 1;
 
 	cout << "\n";
 	cout << "results\n"
 		<< "nodes: " << st.nodes << "\n"
 		<< "ways : " << st.ways << "\n";
-
-	delete xml;
 
 	return 0;
 }
