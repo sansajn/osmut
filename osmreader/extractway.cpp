@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <boost/format.hpp>
+#include <boost/lexical_cast.hpp>
 #include "osm_range.h"
 
 using std::map;
@@ -75,28 +76,23 @@ int main(int argc, char * argv[])
 	for (auto r = make_node_range(osm); r; ++r)
 		nodes[r->id] = gps_coordinate(r->lat, r->lon);
 
-	cout << "\nnodes:" << nodes.size() << "\n";
-
 	cout << "reading ways ..." << std::flush;
 
-	string key = argv[2];
-	string value = argv[3];
-
 	kml_dumper out("extract.kml", nodes);
+
+	int id = boost::lexical_cast<int>(argv[2]);
 
 	int nways = 0;
 	for (auto r = make_way_range(osm); r; ++r)
 	{
 		way w = *r;
-		if (w.tags)
-			for (auto & t : *w.tags)
-				if (t.first == key && t.second == value)
-					out.dump(w, "", "7f0000ff");
+		if (w.id == id)
+			out.dump(w, (boost::format("way:{1}") % id).str(), "7f0000ff");
 		nways += 1;
 	}
 
-	cout << "\n\n{stats}\n";
-	cout << "ways:" << nways << "\n";
+	cout << "\n\n";
+	cout << "nodes:" << nodes.size() << ", ways:" << nways << "\n";
 
 	cout << "\n";
 

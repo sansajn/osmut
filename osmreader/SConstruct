@@ -56,15 +56,15 @@ env.Program(
 	CCFLAGS=ccflags
 )
 
-# extract ways
+# extract way
 
-extractways_srcs = Split('''
-	extractways.cpp
+extractway_srcs = Split('''
+	extractway.cpp
 ''')
 
 env.Program(
-	'extractways',
-	extractways_srcs + common_objs,
+	'extractway',
+	extractway_srcs + common_objs,
 	CCFLAGS=ccflags
 )
 
