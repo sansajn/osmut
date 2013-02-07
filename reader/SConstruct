@@ -1,0 +1,30 @@
+# for release build use '$ scons mode=release'.
+import os
+
+env = Environment()
+
+build_mode = ARGUMENTS.get('mode', 'debug')
+
+if os.name == 'nt':
+	release_ccflags = debug_ccflags = '/EHsc'
+else:  # linux
+	if build_mode == 'debug':
+		env['CC'] = 'clang'
+		env['CXX'] = 'clang++'
+	common_ccflags = ' -std=c++11 '
+	release_ccflags = common_ccflags + '-O3 -DRELEASE '
+	debug_ccflags = common_ccflags + '-g -O0 -DDEBUG '
+
+if build_mode == 'debug':
+	ccflags = debug_ccflags
+else:
+	ccflags = release_ccflags
+
+
+print '+++Compiling in ' + build_mode + ' mode.+++'
+
+
+env.Program(
+	['test_parser.cpp', 'osm_parser.cpp'],	CCFLAGS=ccflags
+)
+

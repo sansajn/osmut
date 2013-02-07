@@ -1,0 +1,32 @@
+xml.read()  // prečíta ďalší xml element, ak už nie-je čo čítať vráti false
+
+get_attribute_count()   // počet atributov elementu
+get_attribute_value(n)  // vráti hodnotu n-teho atributu
+get_attribute_name(n)   // nazov atributu
+
+get_node_type()  // vráti typ uzla ELEMENT, ELEMENT_END, TEXT
+get_node_name()  // meno uzla
+
+
+<node id="123" lat="12.23" lon="48.98">
+
+node je element, id, lat a lon sú atributy elementu
+
+
+<element-name [key="value" ...]>
+
+
+
+v osm nie sú žiadne texty, takže tie môžem ignorovať
+
+
+všetko bude element (TAG, TAG_END, TEXT, [COMMENT, ...])
+
+
+potrebujem možnosť parsovať vstup s ľubovoľného miesta
+
+
+<node id="12345" lat="17.0001" lon="48.12345">
+	<tag k="crossing" v="true"/>
+</node>
+
