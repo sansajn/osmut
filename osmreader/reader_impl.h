@@ -22,8 +22,8 @@ typedef std::map<std::string, std::string> tagmap;
 struct node 
 {
 	int id;
-	float lat;
-	float lon;
+	int lat;  //!< latitude multiplied by 1e7
+	int lon;
 	std::shared_ptr<tagmap> tags;
 };
 

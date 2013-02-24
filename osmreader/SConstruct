@@ -50,11 +50,11 @@ waytypes_srcs = Split('''
 	waytypes.cpp
 ''')
 
-env.Program(
-	'waytypes', 
-	waytypes_srcs + common_objs,
-	CCFLAGS=ccflags
-)
+#env.Program(
+#	'waytypes', 
+#	waytypes_srcs + common_objs,
+#	CCFLAGS=ccflags
+#)
 
 # extract way
 
@@ -62,11 +62,11 @@ extractway_srcs = Split('''
 	extractway.cpp
 ''')
 
-env.Program(
-	'extractway',
-	extractway_srcs + common_objs,
-	CCFLAGS=ccflags
-)
+#env.Program(
+#	'extractway',
+#	extractway_srcs + common_objs,
+#	CCFLAGS=ccflags
+#)
 
 # list ways (listing osm ways)
 
@@ -74,9 +74,9 @@ listways_srcs = Split('''
 	listways.cpp
 ''')
 
-env.Program(
-	'listways',
-	listways_srcs + common_objs,
-	CCFLAGS=ccflags
-)
+#env.Program(
+#	'listways',
+#	listways_srcs + common_objs,
+#	CCFLAGS=ccflags
+#)
 

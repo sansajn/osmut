@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <cmath>
 #include "osm_consts.h"
 #include "reader_impl.h"
 
@@ -12,6 +13,7 @@ void process_node_element(osmut::xml_reader & osm, node & n);
 void process_way_element(osmut::xml_reader & osm, way & w);
 void process_tag_element(osmut::xml_reader & osm, tagmap & tags);
 
+static int to_signed_coordinate(char const * float_coordinte);
 
 bool node_reader::tag(std::string const & node_name)
 {
@@ -65,12 +67,12 @@ void process_node_element(osmut::xml_reader & osm, node & n)
 		&& "unexpected attribute order 'id' expected");
 	++attrs;
 
-	n.lat = atof((*attrs).second);
+	n.lat = to_signed_coordinate((*attrs).second);
 	assert(strcmp((*attrs).first, "lat") == 0
 		&& "unexpected attribute order 'lat' expected");
 	++attrs;
 
-	n.lon = atof((*attrs).second);
+	n.lon = to_signed_coordinate((*attrs).second);
 	assert(strcmp((*attrs).first, "lon") == 0
 		&& "unexpected attribute order, 'lon' epexted");
 
@@ -163,5 +165,21 @@ void process_tag_element(osmut::xml_reader & osm, tagmap & tags)
 
 	assert(strcmp((*attrs).first, "v") == 0 &&
 		"unexpected 'tag' attribute ('v' expected)");
+}
+
+int to_signed_coordinate(char const * float_coordinte)
+{
+	// very slow implementation, it can be done without string and pow()
+	string only_digits;
+	only_digits.reserve(10);
+	for (int i = 0; i < 10 && i < strlen(float_coordinte); ++i)
+		if (isdigit(float_coordinte[i]))
+			only_digits.push_back(float_coordinte[i]);
+
+	int coord = 0;
+	for (int i = only_digits.size()-1; i > -1; --i)
+		coord += (only_digits[i]-'0') * pow(10, only_digits.size() - (i+1));
+
+	return float_coordinte[0] == '-' ? -coord : coord;
 }
 

@@ -15,7 +15,8 @@ public:
 		operator++();
 	}
 
-	std::pair<char const *, char const *> operator*() {
+	std::pair<char const *, char const *> operator*()
+	{
 		return std::make_pair(
 			reinterpret_cast<char const *>(xmlTextReaderConstName(_reader)),
 			reinterpret_cast<char const *>(xmlTextReaderConstValue(_reader)));
