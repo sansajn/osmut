@@ -1,4 +1,5 @@
-/* vylistuje všetky way-properties */
+/* s mapy do kml extrahuje specifikovanu way
+	$ extractway <osm-input> <way-id> [<kml-output>] */
 #include <map>
 #include <set>
 #include <vector>
@@ -25,12 +26,12 @@ void unrecoverable_error(boost::format const & msg);
 
 struct gps_coordinate
 {
-	float lat;
-	float lon;
+	int lat;
+	int lon;
 
 	gps_coordinate() {}
 
-	gps_coordinate(float latitude, float longitude)
+	gps_coordinate(int latitude, int longitude)
 		: lat(latitude), lon(longitude)
 	{}
 };
@@ -59,7 +60,7 @@ private:
 
 int main(int argc, char * argv[])
 {
-	if (argc < 4)
+	if (argc < 3)
 		unrecoverable_error(
 			boost::format("not enought parameters, 4 needed"));
 
@@ -78,7 +79,11 @@ int main(int argc, char * argv[])
 
 	cout << "reading ways ..." << std::flush;
 
-	kml_dumper out("extract.kml", nodes);
+	string out_fname("extract.kml");
+	if (argc > 3)
+		out_fname = argv[3];
+
+	kml_dumper out(out_fname.c_str(), nodes);
 
 	int id = boost::lexical_cast<int>(argv[2]);
 
@@ -158,7 +163,7 @@ void kml_dumper::line_string(vector<gps_coordinate> const & coords)
 		<< "\t<coordinates>\n";
 
 	for (auto & c : coords)
-		*_out << "\t\t" << c.lat << "," << c.lon << ",0\n";
+		*_out << "\t\t" << c.lat/1e7 << "," << c.lon/1e7 << ",0\n";
 
 	*_out << "\t</coordinates>\n"
 		<< "</LineString>\n";

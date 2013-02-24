@@ -1,4 +1,5 @@
-/* vylistuje špecificku všetky way-properties */
+/* vylistuje špecificku (na zaklade 'key' a 'value') way-properties
+	$ listways <osm-input> <key> <value> */
 #include <string>
 #include <iostream>
 #include <boost/format.hpp>
@@ -16,12 +17,12 @@ void unrecoverable_error(boost::format const & msg);
 
 struct gps_coordinate
 {
-	float lat;
-	float lon;
+	int lat;
+	int lon;
 
 	gps_coordinate() {}
 
-	gps_coordinate(float latitude, float longitude)
+	gps_coordinate(int latitude, int longitude)
 		: lat(latitude), lon(longitude)
 	{}
 };
