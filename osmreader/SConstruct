@@ -80,3 +80,15 @@ env.Program(
 	CCFLAGS=ccflags
 )
 
+# filter (generates new filtered osm)
+
+osmfilter_srcs = Split('''
+	osmfilter.cpp
+''')
+
+env.Program(
+	'osmfilter',
+	osmfilter_srcs + common_objs,
+	CCFLAGS=ccflags
+)
+

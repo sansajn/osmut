@@ -24,7 +24,7 @@ public:
 		++_curr;	
 	}
 
-	operator bool() const {return _curr != _end;}
+	explicit operator bool() const {return _curr != _end;}
 
 	bool operator==(osm_range const & rhs) const 
 	{
