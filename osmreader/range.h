@@ -11,7 +11,8 @@ public:
 	filter_range(Range range, Filter filter)
 		: _curr(range), _filter(filter)
 	{
-		next();
+		if (_curr && !_filter(*_curr))
+			next();
 	}
 
 	reference operator*() {return *_curr;}
@@ -24,8 +25,11 @@ public:
 
 	void next()
 	{
-		while (_curr && !_filter(*_curr))
-			continue;
+		do
+		{
+			++_curr;
+		}
+		while (_curr && !_filter(*_curr));
 	}
 
 private:

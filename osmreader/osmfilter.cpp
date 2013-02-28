@@ -3,7 +3,9 @@
 #include <map>
 #include <vector>
 #include <utility>
+#include <regex>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <boost/format.hpp>
 #include "osm_range.h"
@@ -12,13 +14,14 @@
 using std::map;
 using std::vector;
 using std::pair;
+using std::regex;
 using std::string;
 using std::cout;
-using std::ostream;
+using std::ofstream;
 using osmut::xml_reader;
 
 
-typedef pair<string, string> filter_t;
+typedef pair<regex, regex> filter_t;
 typedef vector<filter_t> filters_t;
 
 class way_filter
@@ -41,6 +44,7 @@ void save_osm_map(string const & osm_outfname, map<int, node> const & nodes,
 	vector<way> const & ways);
 
 filter_t parse_filter(char * argv);
+void remove_unused_nodes(map<int, node> & nodes, vector<way> const & ways);
 void unrecoverable_error(boost::format const & msg);
 
 
@@ -52,10 +56,16 @@ int main(int argc, char * argv[])
 			"not enought parameters, 3 needed (<input>, [<filter-pair> ...], <output>)"));
 	}
 
+	cout << "used filters:\n";
 	vector<filter_t> filters;
 	for (int i = 2; i < argc-1; ++i)
 		filters.push_back(parse_filter(argv[i]));
 
+/*
+	cout << "used filters:\n";
+	for (auto & f : filters)
+		cout << f.first << ":" << f.second << ", ";
+*/
 
 	string osm_infname = argv[1];
 	xml_reader osm(osm_infname.c_str());
@@ -69,16 +79,17 @@ int main(int argc, char * argv[])
 	for (auto r = make_node_range(osm); r; ++r)
 		nodes[r->id] = *r;
 
-
+	cout << "\n";
 	cout << "reading ways ..." << std::flush;
 
 	vector<way> ways;
 	for (auto r = filtered_range(make_way_range(osm), way_filter(filters)); r; ++r)
 		ways.push_back(*r);
 
-	cout << "\n\n";
-	cout << "nodes:" << nodes.size() << ", ways:" << ways.size() << "\n";
+	remove_unused_nodes(nodes, ways);
 
+	cout << "\n";
+	cout << "nodes:" << nodes.size() << ", ways:" << ways.size() << "\n";
 
 	string osm_outfname = argv[argc-1];
 	save_osm_map(osm_outfname, nodes, ways);
@@ -101,24 +112,88 @@ bool way_filter::operator()(way const & w) const
 
 bool way_filter::test_filter(way const & w, filter_t const & f) const
 {
-	auto it_key = w.tags->find(f.first);
-	return it_key != w.tags->end() && it_key->second == f.second;
+	bool key_match = false;
+	for (auto & t : *w.tags)
+	{
+		key_match = regex_match(t.first, f.first);
+		if (key_match && regex_match(t.second, f.second))
+			return true;
+	}
+	return false;
 }
 
 filter_t parse_filter(char * argv)
 {
+	string key, value;
 	string argument(argv);
 	string::size_type sep_pos = argument.find(':');
 	if (sep_pos != string::npos)
-		return make_pair(string(argument.begin(), argument.begin()+sep_pos),
-			string(argument.begin()+sep_pos, argument.end()));
-	else
-		return make_pair(string(), string());
+	{
+		key = string(argument.begin(), argument.begin()+sep_pos);
+		value = string(argument.begin()+sep_pos+1, argument.end());
+		cout << key << ":" << value << "\n";
+	}
+	return make_pair(regex(key, std::regex_constants::basic),
+		regex(value, std::regex_constants::basic));
+}
+
+void remove_unused_nodes(map<int, node> & nodes, vector<way> const & ways)
+{
+	map<int, node> used;
+
+	for (auto & w : ways)
+	{
+		for (auto & id : w.node_ids)
+			used[id] = nodes[id];
+	}
+
+	nodes.swap(used);
 }
 
 void save_osm_map(string const & osm_outfname, map<int, node> const & nodes,
 	vector<way> const & ways)
 {
+	ofstream o(osm_outfname.c_str());
+	if (!o.is_open())
+		return;
+
+	o.precision(10);
+
+	// header
+	o << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+		<< "<osm version=\"0.6\" generator=\"osmfilter\">\n";
+
+	// bounds
+
+	// nodes
+	for (auto & n : nodes)
+	{
+		o << "<node id=\"" << n.second.id << "\" lat=\"" << n.second.lat/1e7
+			<< "\" lon=\"" << n.second.lon/1e7 << "\"/>\n";
+//			<< "\" lon=\"" << n.second.lon/1e7 << "\" visible=\"true\"/>\n";
+	}
+
+	// ways
+	for (auto & w : ways)
+	{
+		o << "<way id=\"" << w.id << "\">\n";
+
+		for (auto & n : w.node_ids)
+			o << "  <nd ref=\"" << n << "\"/>\n";
+
+		if (w.tags)
+		{
+			for (auto & t : *w.tags)
+				o << "  <tag k=\"" << t.first << "\" v=\"" << t.second << "\"/>\n";
+		}
+
+		o << "</way>\n";
+	}
+
+	// footer
+	o << "</osm>\n";
+
+	o.close();
 }
 
 void unrecoverable_error(boost::format const & msg)
