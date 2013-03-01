@@ -86,6 +86,8 @@ osmfilter_srcs = Split('''
 	osmfilter.cpp
 ''')
 
+env.Append(LIBS='boost_regex')
+
 env.Program(
 	'osmfilter',
 	osmfilter_srcs + common_objs,

@@ -3,7 +3,8 @@
 #include <map>
 #include <vector>
 #include <utility>
-#include <regex>
+//#include <regex>
+#include <boost/regex.hpp>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -14,7 +15,9 @@
 using std::map;
 using std::vector;
 using std::pair;
-using std::regex;
+//using std::regex;
+using boost::regex;
+using std::make_pair;
 using std::string;
 using std::cout;
 using std::ofstream;
@@ -133,8 +136,8 @@ filter_t parse_filter(char * argv)
 		value = string(argument.begin()+sep_pos+1, argument.end());
 		cout << key << ":" << value << "\n";
 	}
-	return make_pair(regex(key, std::regex_constants::basic),
-		regex(value, std::regex_constants::basic));
+	return make_pair(regex(key/*, std::regex_constants::basic*/),
+		regex(value/*, std::regex_constants::basic*/));
 }
 
 void remove_unused_nodes(map<int, node> & nodes, vector<way> const & ways)
