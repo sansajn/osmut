@@ -1,3 +1,4 @@
+/*! element_iter, zaklad pre implementaciu node/way/relation iteratoru */
 #pragma once
 #include <memory>
 #include <cstring>
@@ -62,7 +63,7 @@ void element_iterator<ReaderPolicy>::next()
 			if (!_osm->read())
 				_buf = nullptr;
 			else
-				res = process_node();
+				res = !process_node();
 		}
 		while (res);
 	}
@@ -84,12 +85,12 @@ bool element_iterator<ReaderPolicy>::process_node()
 			else
 				return false;
 
-			return true;
+			return true;  // everithing ok
 		}
 
 		case XML_READER_TYPE_END_ELEMENT:
 		{
-			if (strcmp(node_name, OSM_ELEMENT) == 0)
+			if (strcmp(node_name, OSM_ELEMENT) == 0)  // </osm>
 				_buf = nullptr;
 			else
 				return false;

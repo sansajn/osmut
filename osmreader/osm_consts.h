@@ -7,6 +7,7 @@
 #define RELATION_ELEMENT "relation"
 #define TAG_ELEMENT "tag"
 #define NODEREF_ELEMENT "nd"
+#define RELATION_MEMBER "member"
 
 
 enum e_highway_values {

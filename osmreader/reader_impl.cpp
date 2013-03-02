@@ -9,9 +9,10 @@ using std::map;
 using std::shared_ptr;
 using std::string;
 
-void process_node_element(osmut::xml_reader & osm, node & n);
-void process_way_element(osmut::xml_reader & osm, way & w);
-void process_tag_element(osmut::xml_reader & osm, tagmap & tags);
+static void process_node_element(osmut::xml_reader & osm, node & n);
+static void process_way_element(osmut::xml_reader & osm, way & w);
+static void process_relation_element(osmut::xml_reader & osm, relation & r);
+static void process_tag_element(osmut::xml_reader & osm, tagmap & tags);
 
 static int to_signed_coordinate(char const * float_coordinte);
 
@@ -47,6 +48,24 @@ void way_reader::read_tag(osmut::xml_reader & osm, way & w)
 	w.node_ids.clear();
 	process_way_element(osm, w);
 }
+
+bool relation_reader::tag(std::string const & node_name)
+{
+	return node_name == RELATION_ELEMENT;
+}
+
+bool relation_reader::stop_tag(std::string const & node_name)
+{
+	return false;  // there is nothing after relation section
+}
+
+void relation_reader::read_tag(osmut::xml_reader & osm, relation & r)
+{
+	r.tags.reset();
+	r.members.clear();
+	process_relation_element(osm, r);
+}
+
 
 void process_node_element(osmut::xml_reader & osm, node & n)
 {
@@ -149,6 +168,75 @@ void process_way_element(osmut::xml_reader & osm, way & w)
 	assert(!w.node_ids.empty() && "empty 'way' element (some node ids expected)");
 }
 
+void process_relation_element(osmut::xml_reader & osm, relation & r)
+{
+	assert(!osm.empty_element() && "empty 'relation' element");
+
+	osmut::attribute_range attrs = osm.attributes();
+
+	assert(strcmp((*attrs).first, "id") == 0
+		&& "unexpected attribute order ('id' expected)");
+
+	r.id = atoi((*attrs).second);
+
+	while (osm.read())  // read relation data
+	{
+		int node_type = osm.node_type();
+
+		if (node_type == XML_READER_TYPE_ELEMENT)
+		{
+			char const * node_name = osm.node_name();
+
+			assert(strcmp(node_name, 	RELATION_MEMBER) == 0 	|| strcmp(node_name, TAG_ELEMENT) == 0
+				&& "unexpected node inside 'relation' element ('member' or 'tag' allowed)");
+
+			if (strcmp(node_name, RELATION_MEMBER) == 0)
+			{
+				// type -> ref -> role
+				osmut::attribute_range member_attrs = osm.attributes();
+
+				assert(strcmp((*member_attrs).first, "type") == 0
+					&& "type attribute expected");
+
+				member m;
+
+				char const * member_type = (*member_attrs).second;
+				if (strcmp(member_type, "node") == 0)
+					m.type = member::node_type;
+				else if (strcmp(member_type, "way") == 0)
+					m.type = member::way_type;
+				else if (strcmp(member_type, "relation") == 0)
+					m.type = member::relation_type;
+				else
+					assert(true && "unexpected member type ('node', 'way' or 'relation' allowed)");
+
+				++member_attrs;
+
+				assert(strcmp((*member_attrs).first, "ref") == 0
+					&& "ref attribute expected");
+
+				m.ref = atoi((*member_attrs).second);
+				++member_attrs;
+
+				assert(strcmp((*member_attrs).first, "role") == 0
+					&& "role attribute expected");
+
+				m.role = string((*member_attrs).second);
+
+				r.members.push_back(m);
+			}
+			else if (strcmp(node_name, TAG_ELEMENT) == 0)
+			{
+				if (!r.tags)
+					r.tags = shared_ptr<tagmap>(new tagmap);
+				process_tag_element(osm, *r.tags);
+			}
+		}  // if (node_type
+		else if (node_type == XML_READER_TYPE_END_ELEMENT)
+			break;
+	}  // while
+}
+
 void process_tag_element(osmut::xml_reader & osm, tagmap & tags)
 {
 	assert(osm.attribute_count() == 2 &&
@@ -182,4 +270,3 @@ int to_signed_coordinate(char const * float_coordinte)
 
 	return float_coordinte[0] == '-' ? -coord : coord;
 }
-

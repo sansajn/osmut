@@ -40,14 +40,20 @@ private:
 
 typedef osm_range<way_iterator> way_range;
 typedef osm_range<node_iterator> node_range;
+typedef osm_range<relation_iterator> relation_range;
 
+
+inline node_range make_node_range(osmut::xml_reader & osm)
+{
+	return node_range(node_iterator(osm), node_iterator());
+}
 
 inline way_range make_way_range(osmut::xml_reader & osm)
 {
 	return way_range(way_iterator(osm), way_iterator());
 }
 
-inline node_range make_node_range(osmut::xml_reader & osm)
+inline relation_range make_relation_range(osmut::xml_reader & osm)
 {
-	return node_range(node_iterator(osm), node_iterator());
+	return relation_range(relation_iterator(osm), relation_iterator());
 }

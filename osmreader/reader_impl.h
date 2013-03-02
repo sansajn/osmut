@@ -1,3 +1,4 @@
+/* konkretne implementacie node/way a relaion iteratoru */
 #pragma once
 #include <vector>
 #include <memory>
@@ -15,9 +16,21 @@ programátora (jednoduché hľadanie).
 \note Jedinou výhodou vytvorenia mapy na halde je jej jednoduché 
 kopírovanie, ktoré sa však v nadradenej abstrakcii nepredpokladá. 
 Nadradená aplikácia pravdepodobne zvolý inú formu reprezentácie 
-tagu. */
+tagu.
+
+\note mapu na halde je potrebne vykinozit ,lebo sa to nachuja pouziva (
+performance boost je neospravedltelny, lebo tieto struktury ni su urcene pre
+vyzsie vrsvy logiky). */
 
 typedef std::map<std::string, std::string> tagmap;
+
+struct member
+{
+	enum member_type {node_type, way_type, relation_type};
+	member_type type;
+	int ref;
+	std::string role;
+};
 
 struct node 
 {
@@ -41,6 +54,14 @@ struct way
 	std::shared_ptr<tagmap> tags;
 };
 
+struct relation
+{
+	int id;
+	std::vector<member> members;
+	std::shared_ptr<tagmap> tags;
+};
+
+
 struct node_reader
 {
 	typedef node value_type;
@@ -58,9 +79,15 @@ struct node_reader
 struct way_reader
 {
 	typedef way value_type;
-
 	static bool tag(std::string const & node_name);
 	static bool stop_tag(std::string const & node_name);
 	static void read_tag(osmut::xml_reader & osm, way & w);
 };
 
+struct relation_reader
+{
+	typedef relation value_type;
+	static bool tag(std::string const & node_name);
+	static bool stop_tag(std::string const & node_name);
+	static void read_tag(osmut::xml_reader & osm, relation & r);
+};

@@ -12,6 +12,7 @@ struct stats
 {
 	int nodes;
 	int ways;
+	int relations;
 };
 
 void unrecoverable_error(boost::format const & msg);
@@ -31,18 +32,34 @@ int main(int argc, char * argv[])
 	cout << "reading nodes ..." << std::flush;
 
 	for (auto r = make_node_range(osm); r; ++r)
+	{
+//		cout << "id:" << r->id << "\n";
 		st.nodes += 1;
+	}
 
 	cout << "\n";
 	cout << "reading ways ..." << std::flush;
 
 	for (auto r = make_way_range(osm); r; ++r)
+	{
+//		cout << "id:" << r->id << "\n";
 		st.ways += 1;
+	}
+
+	cout << "\n";
+	cout << "reading relations ..." << std::flush;
+
+	for (auto r = make_relation_range(osm); r; ++r)
+	{
+//		cout << "id:" << r->id << "\n";
+		st.relations += 1;
+	}
 
 	cout << "\n";
 	cout << "results\n"
-		<< "nodes: " << st.nodes << "\n"
-		<< "ways : " << st.ways << "\n";
+		<< "nodes   : " << st.nodes << "\n"
+		<< "ways    : " << st.ways << "\n"
+		<< "relation: " << st.relations << "\n";
 
 	return 0;
 }
