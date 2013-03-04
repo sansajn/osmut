@@ -43,6 +43,14 @@ public:
 
 	~xml_reader() {xmlFreeTextReader(_reader);}
 
+	bool open(char const * filename)
+	{
+		if (_reader)
+			xmlFreeTextReader(_reader);
+		_reader = xmlReaderForFile(filename, NULL, 0);
+		return _reader;
+	}
+
 	bool read() {return xmlTextReaderRead(_reader) == 1;}
 
 	char const * node_name() 

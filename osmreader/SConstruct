@@ -1,5 +1,5 @@
 # Pre skompilovanie release verzie zadaj prikaz '$ scons mode=release'.
-use_clang = False
+use_clang = True
 
 env = Environment()
 
