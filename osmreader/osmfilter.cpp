@@ -1,5 +1,5 @@
-/* vylistuje špecificku (na zaklade 'key' a 'value') way-properties
-	$ listways <osm-input> <key> <value> */
+/* na zaklade filtrou do subora dumpnespecificke property
+	ukazka: ./osmfilter in.osm type:boundary admin_level:2 --poly out.dat */
 #include <map>
 #include <set>
 #include <vector>
@@ -63,13 +63,23 @@ int main(int argc, char * argv[])
 	if (argc < 3)
 	{
 		unrecoverable_error(boost::format(
-			"not enought parameters, 3 needed (<input>, [<filter-pair> ...], <output>)"));
+			"not enought parameters, 3 needed (<input> [<filter-pair> ...] [--<opt> ...] <output>)"));
 	}
 
 	cout << "used filters:\n";
 	vector<filter_t> filters;
 	for (int i = 2; i < argc-1; ++i)
-		filters.push_back(parse_filter(argv[i]));
+	{
+		if (argv[i][0] != '-' && argv[i][1] != '-')
+			filters.push_back(parse_filter(argv[i]));
+		else
+			break;
+	}
+
+	bool poly_output = false;
+	for (int i = 2; i < argc-1; ++i)
+		if (strcmp(argv[i], "--poly") == 0)
+			poly_output = true;
 
 	string osm_infname = argv[1];
 	xml_reader osm(osm_infname.c_str());
@@ -179,7 +189,7 @@ void remove_unused_ids(vector<T> & from, set<int> const & used)
 	int end_idx = from.size();
 	for (int i = 0; i < end_idx; ++i)
 	{
-		if (used.find(from[i].id) != used.end())
+		if (used.find(from[i].id) == used.end())  // nenasiel sa
 		{
 			swap(from[i], from[end_idx-1]);
 			--end_idx;

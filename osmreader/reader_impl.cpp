@@ -255,18 +255,36 @@ void process_tag_element(osmut::xml_reader & osm, tagmap & tags)
 		"unexpected 'tag' attribute ('v' expected)");
 }
 
-int to_signed_coordinate(char const * float_coordinte)
+int to_signed_coordinate(char const * float_coordinate)
 {
-	// very slow implementation, it can be done without string and pow()
-	string only_digits;
-	only_digits.reserve(10);
-	for (int i = 0; i < 10 && i < strlen(float_coordinte); ++i)
-		if (isdigit(float_coordinte[i]))
-			only_digits.push_back(float_coordinte[i]);
+	char const * beg = float_coordinate;
+	if (*beg == '-' || *beg == '+')
+		beg += 1;
 
-	int coord = 0;
-	for (int i = only_digits.size()-1; i > -1; --i)
-		coord += (only_digits[i]-'0') * pow(10, only_digits.size() - (i+1));
+	char const * end = float_coordinate + strlen(float_coordinate);
 
-	return float_coordinte[0] == '-' ? -coord : coord;
+	char const * dot_it = strchr(float_coordinate, '.');
+	if (!dot_it)
+		dot_it = end;
+
+	assert((dot_it-beg) < 4
+		&& "konvertovane cislo je v nespravnom formate");
+
+	// cela časť
+	int a = 0;
+	int exp = 7;
+	char const * dig = dot_it-1;
+	while (dig >= beg)
+		a += (*(dig--) - '0') * pow(10, exp++);
+
+	// desatina časť
+	int b = 0;
+	exp = 6;
+	dig = dot_it+1;
+	while (dig < end)
+		b += (*(dig++) - '0') * pow(10, exp--);
+
+	int val = (float_coordinate[0] == '-' ? -1 : 1) * (a+b);
+
+	return val;
 }
