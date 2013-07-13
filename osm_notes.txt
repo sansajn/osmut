@@ -1,3 +1,7 @@
+1) Ako presné sú transformácie, ktoré používam ?
+2) Ako transformuje monav ?
+3) Aké štruktúry používa monav na lookup ?
+
 Omnoho efektívnejšie (z hladiska spotreby pamäte) je spracovávať najprv way
 elementy, pretože ich bude veľké množstvo vyfiltrovaných. V dobe čítania
 vrcholou už viem, ktoré z nich potrebujem a ktoré nie. Problém je v tom, že
@@ -5,7 +9,7 @@ potrebujem mapu použitých vrcholou ktorá zaberie niekoľko krát viac miesta 
 samotné vrcholy a tiež hladanie (v porovnaním s priamym prístupom) v mape je
 pomalé.
 
-(?) Ako presné sú transformácie, ktoré používam ?
+1) Ako presné sú transformácie, ktoré používam ?
 
 Pri použití merkátoru a inverzného merkátoru na výsledok sa objavý chyba okolo
 štvrtého desatiného miesta, čo znamená aj niekoľko metrou na povrchu zeme.
@@ -30,7 +34,7 @@ Plain c implementácia (bez zoomu)
 	48.1124106, 17.1219399 -> (0.000000, 0.000000) -> (3.20622e-11%, 0%)
 	48.1124192, 17.1213834 -> (0.000000, 0.000000) -> (3.20622e-11%, 0%)
 
-(?) Ako transformuje monav ?
+2) Ako transformuje monav ?
 
 Celá matematika je implementovaná v 'coordinates.h'. 
 
@@ -58,7 +62,7 @@ V monave sa nerobý inverzná mercator transformácia, GPS pozícia sa s
 vrcholom/hranou spáruje hladaním v grid-tabulke na základe UnsignedCoordinate.
 
 
-(?) Aké štruktúry používa monav na lookup ?
+3) Aké štruktúry používa monav na lookup ?
 
 
 {Vykreslovanie}

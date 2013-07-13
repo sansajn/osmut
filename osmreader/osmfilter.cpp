@@ -1,4 +1,4 @@
-/* na zaklade filtrou do subora dumpnespecificke property
+/* na zaklade filtrou do subora dumpne specificke property
 	ukazka: ./osmfilter in.osm type:boundary admin_level:2 --poly out.dat */
 #include <map>
 #include <set>
