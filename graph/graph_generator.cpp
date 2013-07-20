@@ -11,10 +11,8 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
-#include <irrXML.h>
-#include "iterator.h"
-#include "osmff.h"
 #include "geometry.h"
+#include "osm_iter.h"
 
 using std::sort;
 using std::count_if;
@@ -28,7 +26,6 @@ using std::numeric_limits;
 using std::ofstream;
 using std::cout;
 using std::endl;
-using namespace irr::io;
 
 namespace chrono 
 {
@@ -90,9 +87,9 @@ pre prvý vrchol, nasledovane hranamy pre druhý, tretí, atď. */
 bool write_graph(char const * fname, 
 	vector<pair<vertex, int>> const & verts, vector<edge> const & edges);
 
-void read_vertices(IrrXMLReader & xml, vector<pair<vertex, int>> & verts);
+void read_vertices(osmut::xml_reader & xml,vector<pair<vertex, int>> & verts);
 
-void read_ways(IrrXMLReader & xml, vector<edge> & edges, way_stats & stats);
+void read_ways(osmut::xml_reader & xml, vector<edge> & edges, way_stats & stats);
 
 void cut_way(way const & w, vector<vertex> const & verts, 
 	vector<edge> & edges);
@@ -115,7 +112,7 @@ float distance(signed_coordinate const & a, signed_coordinate const & b);
 
 e_highway_values classify(way const & w);
 
-bool in_profile(tagmap & tags, char const * pedestrian_ways[]);
+bool in_profile(tagmap & tags, char const * profile_ways[]);
 
 void sort_edges(vector<edge> & edges);
 
@@ -139,16 +136,15 @@ int main(int argc, char * argv[])
 	if (argc > 1)
 		xml_fname = argv[1];
 
-	IrrXMLReader * xml = createIrrXMLReader(xml_fname.c_str());
-
-	assert(xml && "reader instance empty");
-	// ne-asertne ked neexistuje otvoreny subor
+	osmut::xml_reader xml(xml_fname.c_str());
 
 // vrcholy	
 	chrono::clock::time_point start_tm = chrono::clock::now();
 	
 	vector<pair<vertex, int>> verts;
-	read_vertices(*xml, verts);
+	read_vertices(xml, verts);
+
+	assert(verts.size() && "not a valid vertex");
 
 	chrono::clock::duration dt = chrono::clock::now() - start_tm;
 
@@ -162,9 +158,7 @@ int main(int argc, char * argv[])
 
 	vector<edge> edges;
 	way_stats stats{0, 0};
-	read_ways(*xml, edges, stats);
-
-	delete xml;
+	read_ways(xml, edges, stats);
 
 	dt = chrono::clock::now() - start_tm;
 
@@ -180,7 +174,8 @@ int main(int argc, char * argv[])
 	set<int> used_verts;
 	fill_used_vertices(edges, used_verts);
 
-	cout << "used vetrices: " << used_verts.size() << endl;
+	cout << "used vetrices: " << used_verts.size()
+		<< " (" << (used_verts.size()/float(verts.size()))*100 << "%)" << endl;
 
 	vector<bool> used_mask;
 	fill_used_mask(verts, used_verts, used_mask);
@@ -208,13 +203,13 @@ int main(int argc, char * argv[])
 
 	dt = chrono::clock::now() - start_tm;
 
-	cout << "reindex and short vertices in ~" 
+	cout << "reindex and sort vertices in ~"
 		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" 
 		<< endl;
 
 	start_tm = chrono::clock::now();
 
-	write_graph("graph.grp", verts, edges);
+	write_graph("/data/temp/graph.grp", verts, edges);
 
 	dt = chrono::clock::now() - start_tm;
 
@@ -303,15 +298,17 @@ void cut_way(way const & w, vector<edge> & edges)
 		int node_idx = w.node_ids[i];
 		int next_node_idx = w.node_ids[i+1];
 
-		// distance will be calculated later
+		e_highway_values highway_class = classify(w);
+		if (highway_class == e_highway_values::e_unknown)
+			continue;
 
-		edges.push_back(
-			edge{node_idx, next_node_idx, 0, uint8_t(classify(w))});
+		// distance will be calculated later
+		edges.push_back(edge{node_idx, next_node_idx, 0, int(highway_class)});
 
 		auto oneway_it = w.tags->find("oneway");
 		if (oneway_it == w.tags->end() || oneway_it->second != "yes")
 			edges.push_back(
-				edge{next_node_idx, node_idx, 0, uint8_t(classify(w))});
+				edge{next_node_idx, node_idx, 0, int(highway_class)});
 	}
 }
 
@@ -373,36 +370,43 @@ e_highway_values classify(way const & w)
 	}
 
 	auto highway_it = w.tags->find("highway");
+	if (highway_it == end(*w.tags))
+		return e_highway_values::e_unknown;
+	else
+		return highway_map[highway_it->second];
 
-	assert(highway_it != end(*w.tags) && "way has no 'highway' tag");
-
-	return highway_map[highway_it->second];
+//	assert(highway_it != end(*w.tags) && "way has no 'highway' tag");
 }
 
-void read_ways(IrrXMLReader & xml, vector<edge> & edges, way_stats & stats)
+void read_ways(osmut::xml_reader & xml, vector<edge> & edges, way_stats & stats)
 {
-	way waybuf;
-	for (way_iterator way_it(&xml, &waybuf); way_it != way_iterator();
-		++way_it)
+	for (way_iterator way_it(xml); way_it != way_iterator(); ++way_it)
 	{
 		stats.n_ways += 1;
-		if (way_it->tags && in_profile(*way_it->tags, pedestrian_ways))
-			cut_way(*way_it, edges);
+		if (way_it->tags /*&& in_profile(*way_it->tags, pedestrian_ways)*/)
+			cut_way(*way_it, edges);  // rozdeli cestu na hrany (zmen nazov)
 		else
 			stats.n_filtered_ways += 1;
 	}
 }
 
-void read_vertices(IrrXMLReader & xml, vector<pair<vertex, int>> & verts)
+inline bool valid_node_position(signed_coordinate const & coord)
 {
-	node nodebuf;
-	for (node_iterator node_it(&xml, &nodebuf); node_it != node_iterator(); 
-		++node_it)
+	return coord.lat <= 180*1e7 && coord.lat >= -180*1e7 && coord.lon <= 180*1e7
+		&& coord.lon >= -180*1e7;
+}
+
+void read_vertices(osmut::xml_reader & xml,vector<pair<vertex, int>> & verts)
+{
+	for (node_iterator node_it(xml); node_it != node_iterator(); ++node_it)
 	{
 		vertex v;
-		v.coord.lat = node_it->lat*1e7;
-		v.coord.lon = node_it->lon*1e7;
-		verts.push_back(make_pair(v, node_it->id));
+		v.coord.lat = node_it->lat;
+		v.coord.lon = node_it->lon;
+		if (valid_node_position(v.coord))
+			verts.push_back(make_pair(v, node_it->id));
+		else
+			cout << "invalid coordinate " << node_it->id << "\n";
 	}
 }
 
@@ -485,9 +489,9 @@ header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges)
 	return h;
 }
 
-bool in_profile(tagmap & tags, char const * pedestrian_ways[])
+bool in_profile(tagmap & tags, char const * profile_ways[])
 {
-	char const ** type = pedestrian_ways;
+	char const ** type = profile_ways;
 	while (*type)
 	{
 		if (tags["highway"] == *type)

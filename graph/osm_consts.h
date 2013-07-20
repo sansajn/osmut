@@ -1,12 +1,13 @@
-// osm file format
+// osm file format constants
 #pragma once
 
-#define OSM_TAG "osm"
-#define NODE_TAG "node"
-#define WAY_TAG "way"
-#define RELATION_TAG "relation"
-#define TAG_TAG "tag"
-#define NODEREF_TAG "nd"
+#define OSM_ELEMENT "osm"
+#define NODE_ELEMENT "node"
+#define WAY_ELEMENT "way"
+#define RELATION_ELEMENT "relation"
+#define TAG_ELEMENT "tag"
+#define NODEREF_ELEMENT "nd"
+#define RELATION_MEMBER "member"
 
 
 enum e_highway_values {
@@ -35,6 +36,7 @@ enum e_highway_values {
 	e_bridleway,
 	e_steps,
 	e_proposed,
-	e_construction
+	e_construction,
+	e_unknown
 };
 

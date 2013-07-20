@@ -1,10 +1,14 @@
+/*! Implementuje geometricke utility. */
 #pragma once
+#include <cstdint>
 
 namespace traits
 {
+	//! Sprisstupnuje typ koordinatu bodu.
 	template <typename P>
 	struct coordinate_type {};
 
+	//! spristupnuje koordinaty bodu.
 	template <typename P, int D>
 	struct access {};
 };
@@ -73,6 +77,7 @@ struct rect
 };
 
 
+//! Implementácia bodu.
 struct signed_coordinate
 {
 	int32_t lat, lon;
