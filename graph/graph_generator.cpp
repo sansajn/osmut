@@ -11,6 +11,7 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+#include <GeographicLib/Geodesic.hpp>
 #include "geometry.h"
 #include "osm_iter.h"
 
@@ -26,6 +27,8 @@ using std::numeric_limits;
 using std::ofstream;
 using std::cout;
 using std::endl;
+
+using namespace GeographicLib;
 
 namespace chrono 
 {
@@ -52,7 +55,7 @@ struct edge
 {
 	int source;
 	int target;
-	int distance;
+	int distance;  // length
 	int type;
 };
 
@@ -105,7 +108,7 @@ void fill_used_mask(vector<pair<vertex, int>> const & verts,
 void remove_unused_vertices(vector<bool> & used_mask, 
 	vector<pair<vertex, int>> & verts);
 
-void calculate_distance(vector<vertex> const & verts, vector<edge> & edges);
+void calculate_distance(vector<pair<vertex, int>> const & verts, vector<edge> & edges);
 
 //! Vráti vzdialenosť dvoch bodov na sfére.
 float distance(signed_coordinate const & a, signed_coordinate const & b);
@@ -204,8 +207,16 @@ int main(int argc, char * argv[])
 	dt = chrono::clock::now() - start_tm;
 
 	cout << "reindex and sort vertices in ~"
-		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" 
-		<< endl;
+		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" << endl;
+
+	start_tm = chrono::clock::now();
+
+	calculate_distance(verts, edges);
+
+	dt = chrono::clock::now() - start_tm;
+
+	cout << "calculate edges distance ~"
+		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" << endl;
 
 	start_tm = chrono::clock::now();
 
@@ -312,21 +323,20 @@ void cut_way(way const & w, vector<edge> & edges)
 	}
 }
 
-void calculate_distance(vector<vertex> const & verts, vector<edge> & edges)
+void calculate_distance(vector<pair<vertex, int>> const & verts, vector<edge> & edges)
 {
 	for (auto & e : edges)
-		e.distance = distance(verts[e.source].coord, verts[e.target].coord);
+	{
+		double distance = 0.0;
+		signed_coordinate const & s = verts[e.source].first.coord;
+		signed_coordinate const & t = verts[e.target].first.coord;
+		Geodesic const & geod = Geodesic::WGS84;
+		geod.Inverse(s.lat/1e7, s.lon/1e7, t.lat/1e7, t.lon/1e7, distance);
+		e.distance = distance;
+	}
 }
 
 inline float torad(float deg) {return deg*pi/180.0f;}
-
-float distance(signed_coordinate const & a, signed_coordinate const & b)
-{
-	float a_lat = torad(a.lat/10000000.0f), b_lat = torad(b.lat/10000000.0f);
-	float cos_dang = sin(a_lat)*sin(b_lat) 
-		+ cos(a_lat)*cos(b_lat)*cos(torad(fabs((b.lon-a.lon)/10000000.0f)));
-	return r_earth*acos(cos_dang);
-}
 
 e_highway_values classify(way const & w)
 {
@@ -441,7 +451,7 @@ bool write_graph(char const * fname,
 		fgraph.write((char const *)(&e.type), 1);
 	}
 
-// stats, how many zero degree vertices there are ?
+// stats, how many zero degree vertices are there ?
 	int zero_degree_count = int(
 		count_if(begin(idxtable), end(idxtable), 
 			[](uint32_t x){return x == numeric_limits<uint32_t>::max();}));
