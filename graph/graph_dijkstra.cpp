@@ -1,4 +1,5 @@
-/*! vygeneruje jednoduchy graf súbor */
+/*! vygeneruje jednoduchy graf súbor umožnujúci prehladávanie
+jednosmerným dijkstrovím algoritmom */
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -126,9 +127,6 @@ void remove_unused_vertices(vector<bool> & used_mask,
 	vector<pair<vertex, int>> & verts);
 
 void calculate_distance(vector<pair<vertex, int>> const & verts, vector<edge> & edges);
-
-//! Vráti vzdialenosť dvoch bodov na sfére.
-float distance(signed_coordinate const & a, signed_coordinate const & b);
 
 e_highway_values classify(way const & w);
 
