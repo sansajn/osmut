@@ -84,15 +84,32 @@ header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges);
 	| index-table |
 	+-------------+
 
---- koniec ukážky]. Indexová tabuľka obsahuje adresu hrany každého 
-vcholu v poradí dannom uložením vrcholov tzn. na prvom mieste hrany 
-pre prvý vrchol, nasledovane hranamy pre druhý, tretí, atď. */
+--- koniec ukážky]. Indexová tabuľka obsahuje pozície susedou w
+vrchola v (ukazujúce do edges) v graf súbore. Vrcholy v sú v ňej
+zoradene od 0 do N.
+
+Detailný popis grafu [Ukážka:
+
+	vertex[]
+		lat:int32
+		lon:int32
+
+	edge[]
+		target:int32
+		distance:int32
+		type:int8
+
+	idxtable[]
+		vertex-adjs-position:uint32
+	
+--- koniec ukážky]. */
 bool write_graph(char const * fname, 
 	vector<pair<vertex, int>> const & verts, vector<edge> const & edges);
 
 void read_vertices(osmut::xml_reader & xml,vector<pair<vertex, int>> & verts);
 
-void read_ways(osmut::xml_reader & xml, vector<edge> & edges, way_stats & stats);
+void read_ways(osmut::xml_reader & xml, vector<edge> & edges, 
+	way_stats & stats);
 
 void cut_way(way const & w, vector<vertex> const & verts, 
 	vector<edge> & edges);
