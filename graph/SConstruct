@@ -25,8 +25,12 @@ print '+++Compiling in ' + build_mode + ' mode+++'
 
 env['LIBS'].append('Geographic')
 
+objs = env.Object('reader_impl.cpp', CCFLAGS=ccflags)
+
 env.Program(
-	['graph_dijkstra.cpp', 'reader_impl.cpp'],
-	CCFLAGS=ccflags
+	['graph_dijkstra.cpp', objs], CCFLAGS=ccflags
 )
 
+env.Program(
+	['graph_bidi_dijkstra.cpp', objs], CCFLAGS=ccflags
+)

@@ -1,5 +1,12 @@
-/*! vygeneruje jednoduchy graf súbor umožnujúci prehladávanie
-jednosmerným dijkstrovím algoritmom */
+/*! Vygeneruje jednoduchy graf súbor umožnujúci prehladávanie
+obojsmerným dijkstrovím algoritmom.
+
+todo:
+* idx-table premenuj na nodes 
+
+*/
+
+
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -15,6 +22,7 @@ jednosmerným dijkstrovím algoritmom */
 #include <GeographicLib/Geodesic.hpp>
 #include "geometry.h"
 #include "osm_iter.h"
+#include "adjacency_graph.h"
 
 using std::sort;
 using std::count_if;
@@ -38,13 +46,13 @@ namespace chrono
 }
 
 
-struct header
+struct graph_header
 {
 	uint32_t vertices;
 	uint32_t edges;
 	rect<signed_coordinate> bounds;  // 16B
-	uint32_t edge_idx;
-	uint32_t itable_idx;
+	uint32_t edge_table_idx;
+	uint32_t vertex_table_idx;
 };
 
 struct vertex
@@ -60,6 +68,15 @@ struct edge
 	int type;
 };
 
+struct graph_edge  //!< graph edge representation
+{
+	uint32_t target;
+	uint32_t
+		direction : 2,
+		type : 6,
+		distance : 24;
+};
+
 struct way_stats
 {
 	int n_ways;
@@ -69,21 +86,20 @@ struct way_stats
 float const pi = 3.1415926535f;
 float const r_earth = 6371000.0f;
 
-header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges);
+graph_header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges);
 
 /*! Vytvorí graf.
-\param[in] edges Zotriedený zoznam hrán. Hrany su vzostupne (od 0 do N)
-	zotriedene podla source vrcholu.
+\param[in] edges Zotriedený zoznam hrán.
 Štruktúra grafu je nasledovná [Ukážka:
 
 	+-------------+
 	|    header   |
 	+-------------+
-	|   vertices  |
+	|    nodes    |
 	+-------------+
 	|    edges    |
 	+-------------+
-	| index-table |
+	|   vertices  |
 	+-------------+
 
 --- koniec ukážky]. Indexová tabuľka obsahuje pozície susedou w
@@ -92,21 +108,27 @@ zoradene od 0 do N.
 
 Detailný popis grafu [Ukážka:
 
-	vertex[]
-		lat:int32
-		lon:int32
+	node[]
+		lat:32
+		lon:32
 
 	edge[]
-		target:int32
-		distance:int32
-		type:int8
+		target:32
+		direction:2
+		type:6
+		distance:24
 
-	idxtable[]
-		vertex-adjs-position:uint32
-	
+	vertex[]
+		source-first-adjacet:32
+
+Graf su v podstate iba edge[] a vertex[], node[] k výpočtu vobec nepotrebujem a
+kludne môže byť uložený mimo graf.
+
+\note neoptimalizujem obojsmerne hrany, lebo vo write-graph o nich neviem
+
 --- koniec ukážky]. */
-bool write_graph(char const * fname, 
-	vector<pair<vertex, int>> const & verts, vector<edge> const & edges);
+bool write_graph(char const * fname, vector<pair<vertex, int>> const & nodes,
+	vector<edge> const & edges, adjacency_graph<edge const *> const & g);
 
 void read_vertices(osmut::xml_reader & xml,vector<pair<vertex, int>> & verts);
 
@@ -134,6 +156,9 @@ e_highway_values classify(way const & w);
 bool in_profile(tagmap & tags, char const * profile_ways[]);
 
 void sort_edges(vector<edge> & edges);
+
+void create_adjacency_graph(vector<pair<vertex, int>> & verts,
+	vector<edge> const & edges, adjacency_graph<edge const *> & g);
 
 void test_write_graph();
 
@@ -218,10 +243,9 @@ int main(int argc, char * argv[])
 
 	reindex_edges(verts, edges);
 
-	sort_edges(edges);
+	sort_edges(edges);  // toto uz dalej nie je potrebne
 
 	dt = chrono::clock::now() - start_tm;
-
 	cout << "reindex and sort vertices in ~"
 		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" << endl;
 
@@ -230,13 +254,15 @@ int main(int argc, char * argv[])
 	calculate_distance(verts, edges);
 
 	dt = chrono::clock::now() - start_tm;
-
 	cout << "calculate edges distance ~"
 		<< chrono::duration_cast<chrono::milliseconds>(dt).count() << " ms" << endl;
 
+	adjacency_graph<edge const *> g;
+	create_adjacency_graph(verts, edges, g);
+
 	start_tm = chrono::clock::now();
 
-	write_graph("/data/temp/graph.grp", verts, edges);
+	write_graph("/data/temp/graph.bgrp", verts, edges, g);
 
 	dt = chrono::clock::now() - start_tm;
 
@@ -251,6 +277,17 @@ void sort_edges(vector<edge> & edges)
 {
 	sort(begin(edges), end(edges), 
 		[](edge const & a, edge const & b){return a.source < b.source;});
+}
+
+void create_adjacency_graph(vector<pair<vertex, int>> & verts,
+	vector<edge> const & edges, adjacency_graph<edge const *> & g)
+{
+	g.resize(verts.size());
+	for (auto & e : edges)
+	{
+		g.append_edge(e.source, &e);
+		g.append_edge(e.target, &e);
+	}
 }
 
 void fill_used_vertices(vector<edge> const & edges, set<int> & used_verts)
@@ -436,59 +473,104 @@ void read_vertices(osmut::xml_reader & xml,vector<pair<vertex, int>> & verts)
 	}
 }
 
-bool write_graph(char const * fname, 
-	vector<pair<vertex, int>> const & verts, vector<edge> const & edges)
+bool write_graph(char const * fname, vector<pair<vertex, int>> const & nodes,
+	vector<edge> const & edges, adjacency_graph<edge const *> const & g)
 {
 	ofstream fgraph(fname);
 	if (!fgraph.is_open())
 		return false;
 
-	header head = create_header(verts, edges.size());
-	fgraph.write((char const *)(&head), sizeof(header));
+// header
+	graph_header head = create_header(nodes, edges.size());
+	fgraph.write((char const *)(&head), sizeof(graph_header));
 
-	for (auto & v : verts)
+// nodes
+	for (auto & n : nodes)
 	{
-		fgraph.write((char const *)(&v.first.coord.lat), 4);
-		fgraph.write((char const *)(&v.first.coord.lon), 4);
+		fgraph.write((char const *)(&n.first.coord.lat), 4);
+		fgraph.write((char const *)(&n.first.coord.lon), 4);
 	}
 
-	assert(fgraph.tellp() == head.edge_idx 
+// edges
+	assert(fgraph.tellp() == head.edge_table_idx
 		&& "edges are written to wrong file position");
 
-	vector<uint32_t> idxtable(verts.size(), numeric_limits<uint32_t>::max());
+	assert(nodes.size() == g.vertices()
+		&& "number of nodes must be equall to number of vertices");
 
-	for (auto & e : edges)
+	vector<uint32_t> verts(g.vertices(), numeric_limits<uint32_t>::max());
+
+	// pre kazdy vrchol
+	for (size_t v = 0; v < g.vertices(); ++v)
 	{
-		if (idxtable[e.source] == numeric_limits<uint32_t>::max())
-			idxtable[e.source] = fgraph.tellp();
+		verts[v] = fgraph.tellp();
 
-		fgraph.write((char const *)(&e.target), 4);
-		fgraph.write((char const *)(&e.distance), 4);
-		fgraph.write((char const *)(&e.type), 1);
+		// for edge direction 0:forward, 1:backward, 2:bidirectional
+
+		for (auto & e : g[v])
+		{
+			graph_edge ge;
+			ge.type = e->type;
+			ge.distance = e->distance;
+			ge.direction = (e->source == v) ? 0 : 1;
+			ge.target = (ge.direction == 0) ? e->target : e->source;
+
+			fgraph.write((char const *)(&ge), sizeof(graph_edge));  // 8 bytes
+		}
 	}
 
-// stats, how many zero degree vertices are there ?
+/*
+	// postupne pre kazdy vrchol
+	for (int v = 0; v < nodes.size(); ++v)
+	{
+		vector<graph_edge> incidents;
+
+		// najdi jeho incidencne hrany (in aj out)
+		for (auto & e : edges)
+		{
+			assert(e.distance < (1<<24)
+				&& "data-error: prekrocena maximalna dlzka hrany" );
+
+			// for edge direction 0:forward, 1:backward, 2:bidirectional
+
+			if (e.source == v)  // forward
+				incidents.push_back(	graph_edge{e.target, 0, e.type, e.distance});
+
+			if (e.target == v)  // backward
+				incidents.push_back(graph_edge{e.source, 1, e.type, e.distance});
+		}
+
+		verts[v] = fgraph.tellp();
+
+		// zapis ich do grafu
+		for (auto & e : incidents)
+			fgraph.write((char const *)(&e), sizeof(graph_edge));  // 8 bytes
+	}
+*/
+
+	// stats, how many zero degree vertices are there ?
 	int zero_degree_count = int(
-		count_if(begin(idxtable), end(idxtable), 
+		count_if(begin(verts), end(verts),
 			[](uint32_t x){return x == numeric_limits<uint32_t>::max();}));
 	cout << "zero degree vertices: " << zero_degree_count << "\n";
 
+// vertices
+	assert(fgraph.tellp() == head.vertex_table_idx
+		&& "vertex table is written to wrong file position");
 
-	assert(fgraph.tellp() == head.itable_idx
-		&& "index table is written to wrong file position");
-
-	for (auto & idx : idxtable)
-		fgraph.write((char const *)(&idx), 4);
+	for (auto & v : verts)
+		fgraph.write((char const *)(&v), 4);
 
 	fgraph.close();
+
 	return true;
 }
 
-header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges)
+graph_header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges)
 {
 	uint32_t n_verts = verts.size();
 
-	assert(verts.size() > 1 && "there must be at least two vertices");
+	assert(n_verts > 1 && "there must be at least two vertices");
 
 	rect<signed_coordinate> bounds{verts[0].first.coord, verts[1].first.coord};
 	for (auto & v : verts)
@@ -506,12 +588,12 @@ header create_header(vector<pair<vertex, int>> const & verts, uint32_t n_edges)
 		<< "  (" << bounds.p1.lat << ":" << bounds.p1.lon << ", " 
 		<< bounds.p2.lat << ":" << bounds.p2.lon << ")" << "\n";
 
-	header h;
+	graph_header h;
 	h.vertices = n_verts;
 	h.edges = n_edges;
 	h.bounds = bounds;
-	h.edge_idx = sizeof(header) + n_verts*2*4;
-	h.itable_idx = h.edge_idx + n_edges*(2*4+1);
+	h.edge_table_idx = sizeof(graph_header) + n_verts*sizeof(vertex);
+	h.vertex_table_idx = h.edge_table_idx + n_edges*2*sizeof(graph_edge);
 	return h;
 }
 
