@@ -1,0 +1,23 @@
+# Pre skompilovanie release verzie zadaj prikaz '$ scons mode=release'.
+
+env = Environment(
+	CCFLAGS = ['-std=c++11', '-Wall'],
+	CPPPATH = ['libs'],
+	CPPDEFINES=['GLM_FORCE_RADIANS'],
+	LIBS = ['Geographic']
+)
+
+env.ParseConfig('xml2-config --cflags --libs')
+
+build_mode = ARGUMENTS.get('mode', 'debug')
+
+if build_mode == 'release':
+	env['CCFLAGS'].append('-O3')
+else:
+	env['CCFLAGS'].append(['-g', '-O0'])
+
+graph_objs = env.Object(Glob('libs/graph/*.cpp'))
+local_objs = env.Object(['reader_impl.cpp'])
+objs = [local_objs, graph_objs]
+
+env.Program(['roadgraph.cpp', objs])
