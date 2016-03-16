@@ -9,7 +9,7 @@
 #define NODEREF_ELEMENT "nd"
 #define RELATION_MEMBER "member"
 
-//! \saa http://wiki.openstreetmap.org/wiki/Key:highway
+
 enum e_highway_values {
 	e_motorway,
 	e_motorway_link,
@@ -36,7 +36,6 @@ enum e_highway_values {
 	e_bridleway,
 	e_steps,
 	e_proposed,
-	e_construction,
-	e_unknown
+	e_construction
 };
 

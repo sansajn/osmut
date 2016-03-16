@@ -5,10 +5,10 @@
 #include <iostream>
 #include <boost/geometry.hpp>
 #include <glm/vec2.hpp>
-#include "reader_impl.h"
+#include "osmut/reader_impl.h"
+#include "osmut/osm_iter.h"
 #include "graph/graph.hpp"
 #include "geometry/box2.hpp"
-#include "osm_iter.h"
 
 using std::string;
 using std::vector;
@@ -147,7 +147,8 @@ void osm_roads::read_ways(osmut::xml_reader & osm, map<int, ivec2> const & nodes
 		for (int nid : w.node_ids)
 		{
 			auto node_it = nodes.find(nid);
-			assert(node_it != nodes.end() && "undefined node");
+			if (node_it == nodes.end())
+				continue;  // napr. osmosis pri orezavani neupravuje ways, takze sa odkazuje na neexistujuce nodes
 			vec2 p{node_it->second};
 			r.geometry.push_back(vec2{p.y, p.x});  // TODO: reserve
 		}
@@ -215,6 +216,8 @@ int main(int argc, char * argv[])
 
 	cout << "file '" << graph_file << "' created\n"
 		<< "done!" << std::endl;
+
+	// TODO: dump some stats
 
 	return 0;
 }

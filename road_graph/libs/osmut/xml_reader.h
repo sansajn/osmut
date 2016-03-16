@@ -3,9 +3,10 @@
 #include <libxml/xmlreader.h>
 
 
-namespace osmut
-{
+namespace osmut {
 
+// TODO: operator->, begin(), end()
+// TODO: toto je neefektyvne, a este pred vytvorenim rozsahu poznam pocet atributov
 //! Rozsah iterujúci atributy xml uzlu.
 class attribute_range
 {
@@ -31,7 +32,7 @@ private:
 };
 
 
-//! Umožnuje prechádzať xml dokumentom.
+//! Umožnuje prechádzať xml dokumentom (sax) pre potreby parsovania osm map.
 class xml_reader
 {
 public:

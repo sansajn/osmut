@@ -10,14 +10,15 @@ env = Environment(
 env.ParseConfig('xml2-config --cflags --libs')
 
 build_mode = ARGUMENTS.get('mode', 'debug')
-
 if build_mode == 'release':
 	env['CCFLAGS'].append('-O3')
 else:
 	env['CCFLAGS'].append(['-g', '-O0'])
 
+print '+++Compiling in ' + build_mode + ' mode+++'
+
+osmut_objs = env.Object(Glob('libs/osmut/*.cpp'))
 graph_objs = env.Object(Glob('libs/graph/*.cpp'))
-local_objs = env.Object(['reader_impl.cpp'])
-objs = [local_objs, graph_objs]
+objs = [graph_objs, osmut_objs]
 
 env.Program(['roadgraph.cpp', objs])
