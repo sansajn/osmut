@@ -1,96 +1,32 @@
 # Pre skompilovanie release verzie zadaj prikaz '$ scons mode=release'.
-use_clang = True
 
-env = Environment()
-
-build_mode = ARGUMENTS.get('mode', 'debug')
-
-if build_mode == 'debug' and use_clang:
-	env['CC'] = 'clang'
-	env['CXX'] = 'clang++'
-
-common_ccflags = '-std=c++11 '
-release_ccflags = common_ccflags + '-O3 -DRELEASE '
-debug_ccflags = common_ccflags + '-g -O0 -DDEBUG '
-
-
-if build_mode == 'debug':
-	ccflags = debug_ccflags
-else:
-	ccflags = release_ccflags
+env = Environment(
+	#CXX=['clang++'],
+	CPPPATH=['osmut', '.'],
+	CXXFLAGS=['-std=c++11'],
+	CCFLAGS=['-Wall'],
+	LIBS=['boost_regex', 'gtest', 'pthread']
+)
 
 env.ParseConfig('xml2-config --cflags --libs')
 
+build_mode = ARGUMENTS.get('mode', 'debug')
+if build_mode == 'release':
+	env.Append(CCFLAGS=['-O3'])
+else:
+	env.Append(CCFLAGS=['-g', '-O0'])
+
 print '+++Compiling in ' + build_mode + ' mode+++'
 
-# common objects
+# libs
+osmut_objs = env.Object(Glob('osmut/*.cpp'))
 
-common_srcs = Split('''
-	reader_impl.cpp
-''')
+# tests
+env.Program(['test_osmreader.cpp', osmut_objs])
 
-common_objs = env.Object(common_srcs, CCFLAGS=ccflags)
-
-
-# osmreader (osm-range sample)
-
-osmreder_srcs = Split('''
-	osmreader.cpp
-''')
-
-env.Program(
-	'osmreader', 
-	osmreder_srcs + common_objs,
-	CCFLAGS=ccflags
-)
-
-# waytypes
-
-waytypes_srcs = Split('''
-	waytypes.cpp
-''')
-
-env.Program(
-	'waytypes', 
-	waytypes_srcs + common_objs,
-	CCFLAGS=ccflags
-)
-
-# extract way
-
-extractway_srcs = Split('''
-	extractway.cpp
-''')
-
-env.Program(
-	'extractway',
-	extractway_srcs + common_objs,
-	CCFLAGS=ccflags
-)
-
-# list ways (listing osm ways)
-
-listways_srcs = Split('''
-	listways.cpp
-''')
-
-env.Program(
-	'listways',
-	listways_srcs + common_objs,
-	CCFLAGS=ccflags
-)
-
-# filter (generates new filtered osm)
-
-osmfilter_srcs = Split('''
-	osmfilter.cpp
-''')
-
-env.Append(LIBS='boost_regex')
-
-env.Program(
-	'osmfilter',
-	osmfilter_srcs + common_objs,
-	CCFLAGS=ccflags
-)
-
+# utilities
+env.Program('osmreader', ['osmreader.cpp', osmut_objs])
+env.Program('waytypes', ['waytypes.cpp', osmut_objs])
+env.Program('extractway', ['extractway.cpp', osmut_objs])
+env.Program('listways',	['listways.cpp', osmut_objs])
+env.Program('osmfilter', ['osmfilter.cpp', osmut_objs])

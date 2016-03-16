@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
@@ -6,6 +7,7 @@
 #include "reader_impl.h"
 
 using std::map;
+using std::unordered_map;
 using std::shared_ptr;
 using std::string;
 
@@ -75,25 +77,27 @@ void process_node_element(osmut::xml_reader & osm, node & n)
 		&& "wrong node format (at least 'id', 'lat' and 'lon' "
 			"attributes expected)");
 
-	// must be read before attributes iteration
-	bool empty_element = osm.empty_element();
+	bool empty_element = osm.empty_element();  // must be read before attributes iteration
+
+	unordered_map<string, string> attr_map(n_attribs);
+	for (osmut::attribute_range attrs = osm.attributes(); attrs; ++attrs)
+	{
+		auto keyval = *attrs;
+		attr_map[keyval.first] = keyval.second;
+	}
 
 	// we only care about id, lat and lon attributes
-	osmut::attribute_range attrs = osm.attributes();
+	auto it = attr_map.find("id");
+	assert(it != attr_map.end() && "node's 'id' attribute missing");
+	n.id = atoi(it->second.c_str());
 
-	n.id = atoi((*attrs).second);
-	assert(strcmp((*attrs).first, "id") == 0
-		&& "unexpected attribute order 'id' expected");
-	++attrs;
+	it = attr_map.find("lat");
+	assert(it != attr_map.end() && "node's 'lat' attribute missing");
+	n.lat = to_signed_coordinate(it->second.c_str());
 
-	n.lat = to_signed_coordinate((*attrs).second);
-	assert(strcmp((*attrs).first, "lat") == 0
-		&& "unexpected attribute order 'lat' expected");
-	++attrs;
-
-	n.lon = to_signed_coordinate((*attrs).second);
-	assert(strcmp((*attrs).first, "lon") == 0
-		&& "unexpected attribute order, 'lon' epexted");
+	it = attr_map.find("lon");
+	assert(it != attr_map.end() && "node's 'lon' attribute missing");
+	n.lon = to_signed_coordinate(it->second.c_str());
 
 	if (empty_element)
 		return;  // no else node element data to read
@@ -140,7 +144,7 @@ void process_way_element(osmut::xml_reader & osm, way & w)
 		{
 			char const * node_name = osm.node_name();
 
-			assert(strcmp(node_name, "nd") == 0 || strcmp(node_name, "tag") == 0
+			assert((strcmp(node_name, "nd") == 0 || strcmp(node_name, "tag") == 0)
 				&&	"unexpected node inside 'way' element ('nd' or 'tag' allowed)");
 
 			if (strcmp(node_name, NODEREF_ELEMENT) == 0)
@@ -187,7 +191,7 @@ void process_relation_element(osmut::xml_reader & osm, relation & r)
 		{
 			char const * node_name = osm.node_name();
 
-			assert(strcmp(node_name, 	RELATION_MEMBER) == 0 	|| strcmp(node_name, TAG_ELEMENT) == 0
+			assert((strcmp(node_name, 	RELATION_MEMBER) == 0 || strcmp(node_name, TAG_ELEMENT) == 0)
 				&& "unexpected node inside 'relation' element ('member' or 'tag' allowed)");
 
 			if (strcmp(node_name, RELATION_MEMBER) == 0)

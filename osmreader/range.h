@@ -20,7 +20,7 @@ public:
 	pointer operator->() const {return _curr.operator->();}
 	void operator++() {	next();}
 	explicit operator bool() const {return bool(_curr);}
-	bool operator==(Range const & rhs) const {rhs == _curr;}
+	bool operator==(Range const & rhs) const {return rhs == _curr;}
 	bool operator!=(Range const & rhs) const {return !(*this == rhs);}
 
 	void next()
