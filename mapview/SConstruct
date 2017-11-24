@@ -4,4 +4,5 @@ env = Environment(
 
 env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
 
-env.Program('mapview.cpp')
+env.Program('sample_mapview.cpp')
+env.Program('mapview', ['mapview_app.cpp', 'mapview.cpp'])
