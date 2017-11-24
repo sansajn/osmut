@@ -3,4 +3,7 @@
 *.creator
 *.creator.user
 *.files
-*.includes
+.idea/
+test/octave-workspace
+.directory
+.sconsign.dblite

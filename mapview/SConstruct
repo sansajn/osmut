@@ -1,0 +1,7 @@
+env = Environment(
+	CCFLAGS=['-std=c++17', '-Wall', '-O0', '-g']
+)
+
+env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
+
+env.Program('mapview.cpp')

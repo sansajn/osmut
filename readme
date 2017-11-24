@@ -1,6 +1,6 @@
 {graph}
 
-graph_dijkstra : vygeneruje grf umožnujúci prehľadávanie jednosmerným
+graph_dijkstra : vygeneruje graf umožnujúci prehľadávanie jednosmerným
 dijkstrovým algoritmom
 
 graph_bidi_dijkstra : vygeneruje jednoduchý graf umožnujúci prehľadávanie
@@ -24,5 +24,10 @@ osmfilter
 
 {road_graph}
 
-vygeneruje proland grapg súbor cestnej siete
+vygeneruje proland graph súbor cestnej siete
+
+
+{mapview}
+
+tile map viewer, umožnuje prezeranie máp
 
