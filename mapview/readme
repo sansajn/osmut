@@ -1,5 +1,21 @@
+* počítanie dlaždíc na gpu
+* kešuj dlaždice
+* vrstvy
 * umozni zobrazit dáta zo satelitu
 * umožni zobraziť body na mape
-* generuj taijly pomocou mapniku
+* renderuj nie len boundaries, ale aj mestá a rieky
+/* kešuj už vygenerované dlaždice
+|* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
+
+
+
+* generuj dlaždice pomocou mapniku
+
+Chcem zachovať súčastný stav, tzn. mapview vie zobrazovať aj dlaždice uložené v
+adresáry a zároveň chcem aby bolo možné zobrazovať aj dlaždice generované
+pomocou mapniku.
+
+
+tile_source

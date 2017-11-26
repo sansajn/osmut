@@ -1,8 +1,19 @@
 env = Environment(
-	CCFLAGS=['-std=c++17', '-Wall', '-O0', '-g']
+	CCFLAGS=['-std=c++17', '-Wall', '-O0', '-g'],
+	LIBS=['boost_filesystem', 'boost_system']
 )
 
 env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
+env.ParseConfig('mapnik-config --libs --cflags')
 
+env.Program('mapview', [
+	'mapview_app.cpp',
+	'mapview.cpp',
+	'tile_source.cpp'
+])
+
+
+# samples
 env.Program('sample_mapview.cpp')
-env.Program('mapview', ['mapview_app.cpp', 'mapview.cpp'])
+env.Program('sample_mapnik.cpp')
+env.Program('sample_render_to_tile.cpp')

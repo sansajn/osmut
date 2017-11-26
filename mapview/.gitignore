@@ -1,3 +1,7 @@
-/tiles/ 
+/data/tiles/ 
+/output/
 /mapview
 /sample_mapview
+/sample_mapnik
+/sample_render_to_tile
+

@@ -1,10 +1,12 @@
 // mapview program implementation
 #include <string>
+#include <memory>
 #include <iostream>
 #include <boost/format.hpp>
 #include <gtkmm.h>
 #include "mapview.hpp"
 
+using std::unique_ptr;
 using std::cout;
 
 
@@ -27,6 +29,8 @@ inline std::ostream & operator<<(std::ostream & o, glm::vec2 const & v)
 }
 
 mapview_window::mapview_window()
+//	: _map{unique_ptr<tile_source>{new locally_storred_tiles{"data/tiles"}}}
+	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{"output/tiles"}}}
 {
 	update_title();
 	add(_map);

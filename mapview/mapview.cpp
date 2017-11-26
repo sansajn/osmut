@@ -1,3 +1,4 @@
+#include <utility>
 #include <cmath>
 #include <boost/format.hpp>
 #include <gdk/gdkkeysyms.h>
@@ -6,14 +7,17 @@
 using std::array;
 using std::string;
 using std::pair;
+using std::move;
+using std::unique_ptr;
 using glm::dvec2;
 using glm::uvec2;
 using glm::min;
 using glm::ceil;
 using glm::abs;
 
-mapview::mapview()
-	: _zoom{0}
+mapview::mapview(unique_ptr<tile_source> tiles)
+	: _tiles{move(tiles)}
+	, _zoom{0}
 	, _origin_pos{0.0, 0.0}
 	, _button_press_pos{0.0, 0.0}
 {
@@ -57,8 +61,7 @@ bool mapview::on_draw(Cairo::RefPtr<Cairo::Context> const & cr)
 	{
 		for (size_t x = bounds[0].x; x < bounds[0].y; ++x)
 		{
-			string tile_file = boost::str(
-				boost::format{"tiles/%3%/%1%/%2%.png"} % x % y % _zoom);
+			string tile_file = _tiles->get(_zoom, x, y);
 			Glib::RefPtr<Gdk::Pixbuf> tile = Gdk::Pixbuf::create_from_file(tile_file);
 			Gdk::Cairo::set_source_pixbuf(cr, tile, round(_origin_pos.x) + x*256, round(_origin_pos.y) + y*256);
 			cr->paint();

@@ -1,5 +1,6 @@
 #pragma once
 #include <array>
+#include <memory>
 #include <gtkmm.h>
 #include <gdkmm.h>
 #include <cairomm/cairomm.h>
@@ -7,12 +8,14 @@
 #include <gdk/gdkkeysyms.h>
 #include <pangomm.h>
 #include <glm/glm.hpp>
+#include "tile_source.hpp"
+
 
 //! Tile based map view widget.
 class mapview : public Gtk::DrawingArea
 {
 public:
-	mapview();
+	mapview(std::unique_ptr<tile_source> tiles);
 	size_t zoom_level() const;
 	std::array<glm::uvec2, 2> visible_tiles() const;
 
@@ -29,10 +32,11 @@ private:
 
 	void force_redraw();
 
+	std::unique_ptr<tile_source> _tiles;
+
 	size_t _zoom;  //!< map zoom level
 	glm::dvec2 _origin_pos;
 	glm::dvec2 _button_press_pos;
 
 	Pango::FontDescription _font;
 };
-
