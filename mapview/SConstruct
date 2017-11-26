@@ -9,9 +9,10 @@ env.ParseConfig('mapnik-config --libs --cflags')
 env.Program('mapview', [
 	'mapview_app.cpp',
 	'mapview.cpp',
-	'tile_source.cpp'
+	'tile_source.cpp',
+	'locally_stored_tiles.cpp',
+	'mapnik_generated_tiles.cpp'
 ])
-
 
 # samples
 env.Program('sample_mapview.cpp')

@@ -5,6 +5,7 @@
 #include <boost/format.hpp>
 #include <gtkmm.h>
 #include "mapview.hpp"
+#include "mapnik_generated_tiles.hpp"
 
 using std::unique_ptr;
 using std::cout;
