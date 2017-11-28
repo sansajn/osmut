@@ -1,0 +1,69 @@
+#!/usr/bin/python
+# vrati zakladne info o shapefajlu
+import sys, ogr
+
+def field_to_str(feature, field_idx):
+	field_def = feature.GetFieldDefnRef(field_idx)
+	field_key = field_def.GetName()
+	field_type = field_def.GetType()
+	field_value = feature.GetField(field_idx)
+	return '{}({}):{}'.format(field_key, translate_field_type(field_type), field_value)
+
+def translate_field_type(ftype):
+	'''http://www.gdal.org/ogr__core_8h.html#a787194bea637faf12d61643124a7c9fc'''
+	if ftype == ogr.OFTInteger:
+		return 'int32'
+	elif ftype == ogr.OFTString:
+		return 'string'
+	elif ftype == ogr.OFTIntegerList:
+		return 'int32_list'
+	elif ftype == ogr.OFTReal:
+		return 'real'
+	elif ftype == ogr.OFTInteger64:
+		return 'int64'
+	elif ftype == org.OFTBinary:
+		return 'binary'
+	elif ftype == ogr.OFTDate:
+		return 'date'
+	elif ftype == ogr.OFTTime:
+		return 'time'
+	else:
+		return str(ftype)
+	
+def translate_geometry_type(gtype):
+	'''http://www.gdal.org/ogr__core_8h.html#a800236a0d460ef66e687b7b65610f12a'''
+	if gtype == ogr.wkbUnknown:
+		return 'unknown'
+	elif gtype == ogr.wkbPoint:
+		return 'point'
+	else:
+		return str(gtype)
+
+def main(args):
+	source = ogr.Open(args[1])
+	print('layers: {}'.format(source.GetLayerCount()))
+
+	for i in range(source.GetLayerCount()):
+		layer = source.GetLayer(i)
+		print('layer_{}: features={}'.format(i, layer.GetFeatureCount()))
+		
+		for j in range(layer.GetFeatureCount()):
+			feature = layer.GetFeature(j)
+			geom = feature.GetGeometryRef()
+			geom_type = geom.GetGeometryType()
+			print('  feature_{}: geometry={}, fields={}'.format(j,
+				translate_geometry_type(geom_type), feature.GetFieldCount()))
+			print('    geometry: {}'.format(geom))
+			
+			for k in range(feature.GetFieldCount()):
+				print('    {}'.format(field_to_str(feature, k)))
+
+
+	print('done!')
+
+if __name__ == '__main__':
+	main(sys.argv)
+
+
+
+

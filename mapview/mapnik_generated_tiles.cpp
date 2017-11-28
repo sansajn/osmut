@@ -58,6 +58,7 @@ void render_tile_to_file(Map const & map, unsigned offset_x, unsigned offset_y,
 
 mapnik_generated_tiles::mapnik_generated_tiles(fs::path const & cache_dir)
 	: _cache_dir{cache_dir}
+	, _used_zoom{(size_t)-1}
 {
 	datasource_cache::instance().register_datasources("/usr/lib/mapnik/3.0/input/");
 }
@@ -82,6 +83,18 @@ Map make_map(size_t zoom)
 	}
 	m.insert_style("polygons", move(poly_style));
 
+	// places
+	feature_type_style places_style;
+	{
+		rule r;
+		{
+			point_symbolizer pt_sym;
+			r.append(move(pt_sym));
+		}
+		places_style.add_rule(move(r));
+	}
+	m.insert_style("places", move(places_style));
+
 	// layers
 	{
 		parameters p;
@@ -89,9 +102,22 @@ Map make_map(size_t zoom)
 		p["file"] = "data/world/TM_WORLD_BORDERS-0.3";
 		p["encoding"] = "utf8";
 
-		layer lyr{"layer_0"};
+		layer lyr{"world layer"};
 		lyr.set_datasource(datasource_cache::instance().create(p));
 		lyr.add_style("polygons");
+
+		m.add_layer(lyr);
+	}
+
+	{
+		parameters p;
+		p["type"] = "shape";
+		p["file"] = "data/world/places";
+		p["encoding"] = "utf8";
+
+		layer lyr{"places layer"};
+		lyr.set_datasource(datasource_cache::instance().create(p));
+		lyr.add_style("places");
 
 		m.add_layer(lyr);
 	}

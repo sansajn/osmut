@@ -1,14 +1,33 @@
 * počítanie dlaždíc na gpu
 * kešuj dlaždice
-* vrstvy
 * umozni zobrazit dáta zo satelitu
 * umožni zobraziť body na mape
-* renderuj nie len boundaries, ale aj mestá a rieky
-/* kešuj už vygenerované dlaždice
+* umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
+* renderuj aj cestnu sieť (dialnice)
+* vrstvy
+/* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
+|* kešuj už vygenerované dlaždice
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
 
+
+* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
+
+na zoznam miest môžem použiť napr. 'places.shp' a na zastavané oblasti môžem
+napr. použiť 'places.shp' s archívu 'world_boundaries-spherical.tgz'
+
+	http://planet.openstreetmap.org/historical-shapefiles/world_boundaries-spherical.tgz
+
+(?) čo obsahuje places shapefile ?
+
+jeden layer v ktorom je 251 feature-ov, každý feature vypadá takto
+
+	feature_N: geometry=point, fields=3
+		 geometry: POINT (74.5662078857422 46.329345703125)
+		 id(int64):250
+		 place_name(string):Lake Balkhash
+		 end_id(int64):250
 
 
 * generuj dlaždice pomocou mapniku
@@ -17,5 +36,3 @@ Chcem zachovať súčastný stav, tzn. mapview vie zobrazovať aj dlaždice ulo�
 adresáry a zároveň chcem aby bolo možné zobrazovať aj dlaždice generované
 pomocou mapniku.
 
-
-tile_source
