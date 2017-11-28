@@ -3,12 +3,14 @@
 #include <memory>
 #include <iostream>
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 #include <gtkmm.h>
 #include "mapview.hpp"
 #include "mapnik_generated_tiles.hpp"
 
 using std::unique_ptr;
 using std::cout;
+namespace fs = boost::filesystem;
 
 
 class mapview_window : public Gtk::Window
@@ -46,6 +48,8 @@ void mapview_window::update_title()
 
 int main(int argc, char * argv[])
 {
+	fs::remove_all("output/tiles");  // render new tiles every time
+
 	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "osmut.mapview");
 	mapview_window w;
 	w.set_default_size(800, 600);
