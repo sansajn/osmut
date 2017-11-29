@@ -12,6 +12,8 @@ using std::unique_ptr;
 using std::cout;
 namespace fs = boost::filesystem;
 
+fs::path const TILE_TMP = "output/tiles";
+
 
 class mapview_window : public Gtk::Window
 {
@@ -33,7 +35,7 @@ inline std::ostream & operator<<(std::ostream & o, glm::vec2 const & v)
 
 mapview_window::mapview_window()
 //	: _map{unique_ptr<tile_source>{new locally_storred_tiles{"data/tiles"}}}
-	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{"output/tiles"}}}
+	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{TILE_TMP}}}
 {
 	update_title();
 	add(_map);
@@ -48,7 +50,7 @@ void mapview_window::update_title()
 
 int main(int argc, char * argv[])
 {
-	fs::remove_all("output/tiles");  // render new tiles every time
+	fs::remove_all(TILE_TMP);  // render new tiles every time
 
 	Glib::RefPtr<Gtk::Application> app = Gtk::Application::create(argc, argv, "osmut.mapview");
 	mapview_window w;

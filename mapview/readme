@@ -5,7 +5,8 @@
 * umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
 * renderuj aj cestnu sieť (dialnice)
 * vrstvy
-/* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
+/* generuj niekoľko dlaždíc naraz (multithread)
+|* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
 |* kešuj už vygenerované dlaždice
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
@@ -15,9 +16,12 @@
 * renderuj nie len boundaries, ale aj mestá a zastavané oblasti
 
 na zoznam miest môžem použiť napr. 'places.shp' a na zastavané oblasti môžem
-napr. použiť 'places.shp' s archívu 'world_boundaries-spherical.tgz'
+napr. použiť 'builtup_area.shp' s archívu 'world_boundaries-spherical.tgz'
 
 	http://planet.openstreetmap.org/historical-shapefiles/world_boundaries-spherical.tgz
+
+Je nutné, aby všetky shp súbory maly rovnakú projekciu (treba skonvertovať
+napr. v q-gise).
 
 (?) čo obsahuje places shapefile ?
 
@@ -28,6 +32,21 @@ jeden layer v ktorom je 251 feature-ov, každý feature vypadá takto
 		 id(int64):250
 		 place_name(string):Lake Balkhash
 		 end_id(int64):250
+
+(?) čo obsahuje builtup_area shapefile ?
+
+jednu vrstvu (layer) v ktorej je 36432 feature-ov, každý feature vypadá takto
+
+  feature_0: geometry=polygon, fields=5
+    geometry: POLYGON ((-19937199.1812703 9926098.36547747,-19936392.3459717 9925014.77013953,-19936394.0445724 9925012.65803309,-19936918.9121666 9924091.84083544,-19940616.765735 9923557.56941947,-19940575.9993199 9925988.5196496,-19940173.4309709 9926244.12512484,-19939371.6914742 9926049.77960846,-19938935.1511127 9925806.85536404,-19937199.1812703 9926098.36547747))
+    id(int64):1
+    f_code(string):AL020
+    nam(string):EGVEKINOT
+    tile_id(int32):1
+    fac_id(int64):2
+
+
+!!! nejede to, lebo dáta majú inu projekciu (world je uplne maly a nejde ho vydieť)
 
 
 * generuj dlaždice pomocou mapniku

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # vrati zakladne info o shapefajlu
-import sys, ogr
+# --layer=0 --feature=0 --features=10 --layers=2
+import ogr, argparse
 
 def field_to_str(feature, field_idx):
 	field_def = feature.GetFieldDefnRef(field_idx)
@@ -36,18 +37,35 @@ def translate_geometry_type(gtype):
 		return 'unknown'
 	elif gtype == ogr.wkbPoint:
 		return 'point'
+	elif gtype == ogr.wkbLineString:
+		return 'line_string'
+	elif gtype == ogr.wkbPolygon:
+		return 'polygon'
 	else:
 		return str(gtype)
 
 def main(args):
-	source = ogr.Open(args[1])
+	print(args)
+	
+	
+	source = ogr.Open(args.input_file)
 	print('layers: {}'.format(source.GetLayerCount()))
 
-	for i in range(source.GetLayerCount()):
+	if args.layers is None:
+		max_layer = source.GetLayerCount()
+	else:
+		max_layer = min(args.layers, source.GetLayerCount())
+
+	for i in range(0, max_layer):
 		layer = source.GetLayer(i)
 		print('layer_{}: features={}'.format(i, layer.GetFeatureCount()))
 		
-		for j in range(layer.GetFeatureCount()):
+		if args.features is None:
+			max_feature = layer.GetFeatureCount()
+		else:
+			max_feature = args.features
+		
+		for j in range(0, max_feature):
 			feature = layer.GetFeature(j)
 			geom = feature.GetGeometryRef()
 			geom_type = geom.GetGeometryType()
@@ -62,7 +80,12 @@ def main(args):
 	print('done!')
 
 if __name__ == '__main__':
-	main(sys.argv)
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--layers', type=int, help='layers')
+	parser.add_argument('--features', type=int, help='features')
+	parser.add_argument('input_file', type=str, nargs='?', help='input_file')
+	main(parser.parse_args())
+
 
 
 

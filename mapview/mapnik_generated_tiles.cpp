@@ -75,7 +75,7 @@ Map make_map(size_t zoom)
 	m.set_background(parse_color("steelblue"));
 
 	// styles
-	feature_type_style poly_style;
+	feature_type_style world_style;
 	{
 		rule r;
 		{
@@ -83,9 +83,22 @@ Map make_map(size_t zoom)
 			put(poly_sym, keys::fill, parse_color("darkgreen"));
 			r.append(move(poly_sym));
 		}
-		poly_style.add_rule(move(r));
+		world_style.add_rule(move(r));
 	}
-	m.insert_style("polygons", move(poly_style));
+	m.insert_style("polygons", move(world_style));
+
+	// builtup-area
+	feature_type_style builtup_style;
+	{
+		rule r;
+		{
+			polygon_symbolizer poly_sym;
+			put(poly_sym, keys::fill, parse_color("lightsteelblue"));
+			r.append(move(poly_sym));
+		}
+		builtup_style.add_rule(move(r));
+	}
+	m.insert_style("builtup", move(builtup_style));
 
 	// places
 	feature_type_style places_style;
@@ -103,28 +116,43 @@ Map make_map(size_t zoom)
 	{
 		parameters p;
 		p["type"] = "shape";
-		p["file"] = "data/world/TM_WORLD_BORDERS-0.3";
+//		p["file"] = "data/world/TM_WORLD_BORDERS-0.3";
+		p["file"] = "data/world/world_boundaries_m2";
 		p["encoding"] = "utf8";
 
-		layer lyr{"world layer"};
+		layer lyr{"world-layer"};
 		lyr.set_datasource(datasource_cache::instance().create(p));
 		lyr.add_style("polygons");
 
-		m.add_layer(lyr);
+		m.add_layer(move(lyr));
 	}
 
 	{
 		parameters p;
 		p["type"] = "shape";
-		p["file"] = "data/world/places";
+		p["file"] = "data/world/builtup_area2";
 		p["encoding"] = "utf8";
 
-		layer lyr{"places layer"};
+		layer lyr{"builtup-area"};
+		lyr.set_datasource(datasource_cache::instance().create(p));
+		lyr.add_style("builtup");
+
+		m.add_layer(move(lyr));
+	}
+
+	{
+		parameters p;
+		p["type"] = "shape";
+		p["file"] = "data/world/places2";
+		p["encoding"] = "utf8";
+
+		layer lyr{"places-layer"};
 		lyr.set_datasource(datasource_cache::instance().create(p));
 		lyr.add_style("places");
 
-		m.add_layer(lyr);
+		m.add_layer(move(lyr));
 	}
+
 
 	m.zoom_all();
 
