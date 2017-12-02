@@ -4,18 +4,20 @@ env = Environment(
 	CPPDEFINES=['BOOST_LOG_DYN_LINK']
 )
 
-env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
-env.ParseConfig('mapnik-config --libs --cflags')
+env.ParseConfig('pkg-config gtkmm-3.0 icu-i18n --cflags --libs')
+env.ParseConfig('mapnik-config --libs')  # --cflags also includes -O2 so debug build is not possible
 
 env.Program('mapview', [
 	'mapview_app.cpp',
 	'mapview.cpp',
-	'tile_source.cpp',
+	'mapnik_render_tile.cpp',
 	'locally_stored_tiles.cpp',
-	'mapnik_generated_tiles.cpp'
+	'mapnik_generated_tiles.cpp',
+	'mapnik_generated_tiles_mt.cpp'
 ])
 
 # samples
 env.Program('sample_mapview.cpp')
 env.Program('sample_mapnik.cpp')
 env.Program('sample_render_to_tile.cpp')
+env.Program('sample_mapnik_mt.cpp')

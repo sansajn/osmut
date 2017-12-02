@@ -1,16 +1,38 @@
+závislosti:
+
+	libgtkmm-3.0-dev
+	gcc-7.0 (c++17 support)
+	libboost-all-dev (1.62)
+
+
 * počítanie dlaždíc na gpu
 * kešuj dlaždice
 * umozni zobrazit dáta zo satelitu
-* umožni zobraziť body na mape
 * umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
+* neblokujúci render dlaždíc
 * renderuj aj cestnu sieť (dialnice)
-* vrstvy
-/* generuj niekoľko dlaždíc naraz (multithread)
+/* umožni zobraziť body na mape
+|* generuj niekoľko dlaždíc naraz (multithread)
 |* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
 |* kešuj už vygenerované dlaždice
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
+
+
+* generuj niekoľko dlaždíc naraz (multithread)
+
+zdá sa že mapnik::Map nie je thread safe (stav k 2015)
+
+	1) Use and re-use available mapnik.Map objects in rendering threads
+	2) No one mapnik.Map object will be in use in more than one thread at any time
+
+https://github.com/mapnik/mapnik-support/issues/57
+
+treba pre každý thread vytvoriť/použiť vlastný mapnik::map objekt. Ako
+management táskou použijem async a future s std.
+
+
 
 
 * renderuj nie len boundaries, ale aj mestá a zastavané oblasti

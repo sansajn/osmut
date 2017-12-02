@@ -1,14 +1,18 @@
 #include <utility>
+#include <vector>
 #include <cmath>
 #include <boost/format.hpp>
 #include <gdk/gdkkeysyms.h>
+#include "tile.hpp"
 #include "mapview.hpp"
 
-using std::array;
 using std::string;
+using std::array;
 using std::pair;
 using std::move;
+using std::vector;
 using std::unique_ptr;
+using std::shared_ptr;
 using glm::dvec2;
 using glm::uvec2;
 using glm::min;
@@ -56,13 +60,22 @@ bool mapview::on_draw(Cairo::RefPtr<Cairo::Context> const & cr)
 	// draw tiles
 	array<uvec2, 2> bounds = visible_tiles();
 
+	// request tiles
+	vector<shared_ptr<tile>> tiles_to_render;
+	for (size_t y = bounds[1].x; y < bounds[1].y; ++y)
+		for (size_t x = bounds[0].x; x < bounds[0].y; ++x)
+			tiles_to_render.emplace_back(_tiles->get(_zoom, x, y));
+
+	// draw tiles
 	cr->save();
 	for (size_t y = bounds[1].x; y < bounds[1].y; ++y)
 	{
 		for (size_t x = bounds[0].x; x < bounds[0].y; ++x)
 		{
-			string tile_file = _tiles->get(_zoom, x, y);
-			Glib::RefPtr<Gdk::Pixbuf> tile = Gdk::Pixbuf::create_from_file(tile_file);
+			size_t idx = (y - bounds[1].x) * (bounds[0].y - bounds[0].x) + (x - bounds[0].x);
+			tile & t = *tiles_to_render[idx];
+			fs::path tile_file = t.path();
+			Glib::RefPtr<Gdk::Pixbuf> tile = Gdk::Pixbuf::create_from_file(tile_file.string());
 			Gdk::Cairo::set_source_pixbuf(cr, tile, round(_origin_pos.x) + x*256, round(_origin_pos.y) + y*256);
 			cr->paint();
 		}

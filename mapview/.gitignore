@@ -1,7 +1,10 @@
-/data/tiles/ 
+/data/tiles/
 /output/
+/data/world/builtup_area*
+/data/world/world_boundaries*
+/data/world/places2*
 /mapview
 /sample_mapview
 /sample_mapnik
 /sample_render_to_tile
-
+/sample_mapnik_mt

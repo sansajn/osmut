@@ -1,14 +1,15 @@
 #pragma once
+#include <mapnik/map.hpp>
 #include "tile_source.hpp"
 
 class mapnik_generated_tiles : public tile_source
 {
 public:
 	mapnik_generated_tiles(fs::path const & cache_dir);
-	std::string get(size_t zoom, size_t x, size_t y) const override;
+	std::shared_ptr<tile> get(size_t zoom, size_t x, size_t y) override;  // const
 
 private:
 	fs::path _cache_dir;
-	mutable mapnik::Map _map;
-	mutable size_t _used_zoom;
+	mapnik::Map _map;
+	size_t _used_zoom;
 };

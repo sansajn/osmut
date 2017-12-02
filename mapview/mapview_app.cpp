@@ -6,7 +6,7 @@
 #include <boost/filesystem.hpp>
 #include <gtkmm.h>
 #include "mapview.hpp"
-#include "mapnik_generated_tiles.hpp"
+#include "mapnik_generated_tiles_mt.hpp"
 
 using std::unique_ptr;
 using std::cout;
@@ -35,7 +35,8 @@ inline std::ostream & operator<<(std::ostream & o, glm::vec2 const & v)
 
 mapview_window::mapview_window()
 //	: _map{unique_ptr<tile_source>{new locally_storred_tiles{"data/tiles"}}}
-	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{TILE_TMP}}}
+//	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{TILE_TMP}}}
+	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles_mt{TILE_TMP}}}
 {
 	update_title();
 	add(_map);
