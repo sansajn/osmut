@@ -1,6 +1,7 @@
 závislosti:
 
 	libgtkmm-3.0-dev
+	libmapnik-dev
 	gcc-7.0 (c++17 support)
 	libboost-all-dev (1.62)
 
