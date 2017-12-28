@@ -5,20 +5,118 @@ závislosti:
 	gcc-7.0 (c++17 support)
 	libboost-all-dev (1.62)
 
-
 * počítanie dlaždíc na gpu
 * kešuj dlaždice
 * umozni zobrazit dáta zo satelitu
 * umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
 * neblokujúci render dlaždíc
 * renderuj aj cestnu sieť (dialnice)
-/* umožni zobraziť body na mape
+* renderuj s databáze
+* renderuj s protobuf fajlu
+* renderuj s osm fajlu
+/* zobraz všetky ATM v prahe
+|* umožni zobraziť body na mape
 |* generuj niekoľko dlaždíc naraz (multithread)
 |* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
 |* kešuj už vygenerované dlaždice
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
+
+
+* umožni zobraziť body na mape
+
+zoznam bodou uložený v lua tabuľke, takto
+
+{  -- lat, lon
+	{123.45, 12.34},
+	{}
+}
+
+dáta môžem umiestniť do quad-tree (reprezentujúceho svet) a odtial získať zoznam
+vyditeľných bodou.
+
+potrebujem tiež vrstvy
+
+(?) Ako na transformáciu geo pozície (wgs84) na súradnice okna ?
+
+najjednoduchšia metóda je lineárna fransformacia
+
+napr. bod p=(50.088182, 14.420210) na súradnice mapy transformujem nasledovne: mapa nech reprezentuje povrch zeme od -180 až 180 stupňou šírky a -90 až 90 stupňou výšky, potom p leží v relatívnej vzdialenosti
+
+	r = ((p_lat + 90)/180, (p_lon + 180)/360) 
+	r = (p_lat/180 + 1/2, p_lon/360 + 1/2)
+
+Nech je mapa dlhá M a široká N bodou, potom bod p bude mať na mape takéto
+súradnice
+
+	s = ((p_lat/180+1/2)*M, (p_lon/360+1/2)*N)
+
+tzn. napr. nech M = N = 2^6*256 = 1538, potom
+
+	s = (1196.9756884, 830.6063416)
+
+
+
+(?) akú mapovú projekciu používam ?
+
+mapová projekcia je funkcia, ktorá transformuje bod na povrchu guľe, ale iného
+sphereoidu do roviny
+
+	f(lat, lon) -> x,y
+
+ak mám dáta s GPS (lat,lon), tak potom tie používajú WGS84 (nie je to projekcia, ale model zeme)
+
+ WGS84, that's the system that the GPS satellite system uses internally
+
+	http://spatialreference.org/ref/epsg/wgs-84/
+
+
+použi toto 
+
+	map.zoom_to_box(mapnik.Box2d(-180, -90, +180, +90))  
+
+aby som si bol istý, že mapa sa renderuje od -180, -90 po 180, 90
+
+pg. 699 (Erik Westra)
+
+mapová projekcia s knihy je
+
+	 srs="+proj=latlong +datum=WGS84"
+
+mapnik defaultne používa
+
+	static const std::string MAPNIK_LONGLAT_PROJ = 
+		"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+
+tzn. žiadnu projekciu (alebo aj priamu)
+
+
+
+
+(?) ako zobrazím GPS dáta na OSM mape ?
+
+gps dáta sú unprojected lat,lon súradnice na wgs84 spheroid tzn. potrebujem použiť merkátor projekciu
+
+
+WGS84 (EPSG 4326)
+Mercator (EPSG 3857)
+
+	http://openstreetmapdata.com/info/projections
+
+Mercator (EPSG 3857)
+
+Most tiled web maps (such as the standard OSM maps and Google Maps) use this Mercator projection.
+
+The map area of such maps is a square with x and y coordiates both between -20,037,508.34 and 20,037,508.34 meters. As a result data north of about 85.1° and south of about -85.1° latitude can not be shown and has been cut off.
+
+The correct EPSG code for this data is 3857 and this is what the data files show. Before this code was allocated other codes such as 900913 were used. If your software does not understand the 3857 code you might need to upgrade. See this page for all the details.
+
+This is the right choice for you if you are creating tiled web maps.
+
+https://alastaira.wordpress.com/2011/01/23/the-google-maps-bing-maps-spherical-mercator-projection/
+
+
 
 
 * generuj niekoľko dlaždíc naraz (multithread)
@@ -34,8 +132,6 @@ treba pre každý thread vytvoriť/použiť vlastný mapnik::map objekt. Ako
 management táskou použijem async a future s std.
 
 
-
-
 * renderuj nie len boundaries, ale aj mestá a zastavané oblasti
 
 na zoznam miest môžem použiť napr. 'places.shp' a na zastavané oblasti môžem
@@ -44,7 +140,10 @@ napr. použiť 'builtup_area.shp' s archívu 'world_boundaries-spherical.tgz'
 	http://planet.openstreetmap.org/historical-shapefiles/world_boundaries-spherical.tgz
 
 Je nutné, aby všetky shp súbory maly rovnakú projekciu (treba skonvertovať
-napr. v q-gise).
+napr. v q-gise). Na konverziu takto, otvor shapefile, ostatene do otvoreneho
+pridaj akú vrstvy Layer > Add Layer > Add Vector Layer. Potom pravým tlačítkom
+na každu vrstvu a vyber Save As a v okne zvol CRS (Coordinaate Transformation
+System).
 
 (?) čo obsahuje places shapefile ?
 

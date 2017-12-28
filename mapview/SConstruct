@@ -13,7 +13,12 @@ env.Program('mapview', [
 	'mapnik_render_tile.cpp',
 	'locally_stored_tiles.cpp',
 	'mapnik_generated_tiles.cpp',
-	'mapnik_generated_tiles_mt.cpp'
+	'mapnik_generated_tiles_mt.cpp',
+	'ortho_layer.cpp',
+	'center_cross.cpp',
+	'geo_point_layer.cpp',
+	'osm_layer.cpp',
+	'text.cpp'
 ])
 
 # samples

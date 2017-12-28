@@ -6,7 +6,12 @@
 #include <boost/filesystem.hpp>
 #include <gtkmm.h>
 #include "mapview.hpp"
+#include "osm_layer.hpp"
+#include "locally_stored_tiles.hpp"
 #include "mapnik_generated_tiles_mt.hpp"
+#include "center_cross.hpp"
+#include "geo_point_layer.hpp"
+#include "text.hpp"
 
 using std::unique_ptr;
 using std::cout;
@@ -34,12 +39,21 @@ inline std::ostream & operator<<(std::ostream & o, glm::vec2 const & v)
 }
 
 mapview_window::mapview_window()
-//	: _map{unique_ptr<tile_source>{new locally_storred_tiles{"data/tiles"}}}
 //	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{TILE_TMP}}}
-	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles_mt{TILE_TMP}}}
+//	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles_mt{TILE_TMP}}}
 {
 	update_title();
 	add(_map);
+
+	text_layout::init(&_map);
+
+	_map.add_layer(new osm_layer{unique_ptr<tile_source>{new locally_stored_tiles{"data/tiles"}}});
+
+	// TODO: pouzi libosmium kniznicu k citaniu OSM suboru s atm poziciamy,
+	// vytvor point layer a zobraz vsetky atm
+	_map.add_layer(new geo_point_layer);
+
+	_map.add_layer(new center_cross);
 	show_all_children();
 }
 

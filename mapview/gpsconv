@@ -1,0 +1,40 @@
+#!/usr/bin/python
+# see
+#
+#  http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+#
+# for further details and math description.
+
+import math, pyproj
+
+def geo_to_map(latlon, zoom):
+	lat_rad = math.radians(latlon[0])
+	n = 2.0 ** zoom
+	xtile = (latlon[1] + 180.0) / 360.0 * n
+	ytile = (1.0 - math.log(math.tan(lat_rad) + (1 / math.cos(lat_rad))) / math.pi) / 2.0 * n
+	return (xtile, ytile)
+
+def map_to_geo(xy, zoom):
+  n = 2.0 ** zoom
+  lon_deg = xy[0] / n * 360.0 - 180.0
+  lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * xy[1] / n)))
+  lat_deg = math.degrees(lat_rad)
+  return (lat_deg, lon_deg)
+
+
+def main():
+	prague_pos = (50.088182, 14.420210)
+	zoom = 16
+	geod = pyproj.Geod(ellps='WGS84')
+	
+	print('\nfor all zoom levels:')
+	for z in range(zoom+1):
+		xy = geo_to_map(prague_pos, z)
+		uv = (int(xy[0]*256.0), int(xy[1]*256.0))
+		latlon = map_to_geo(((uv[0]+0.5)/256.0, (uv[1]+0.5)/256.0), z)  # +0.5 to increase precision (middle of pixel)
+		a1, a2, diff_dist = geod.inv(prague_pos[1], prague_pos[0], latlon[1], latlon[0])
+		print('  {}: {} -> {} -> {} | diff:{}m'.format(z, prague_pos, uv, latlon, diff_dist))
+
+
+if __name__ == '__main__':
+	main()

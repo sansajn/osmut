@@ -1,23 +1,25 @@
 #pragma once
 #include <array>
 #include <memory>
+#include <vector>
 #include <gtkmm.h>
 #include <gdkmm.h>
 #include <cairomm/cairomm.h>
 #include <sigc++/sigc++.h>
 #include <gdk/gdkkeysyms.h>
-#include <pangomm.h>
 #include <glm/glm.hpp>
 #include "tile_source.hpp"
+#include "mapview_layer.hpp"
 
 
 //! Tile based map view widget.
 class mapview : public Gtk::DrawingArea
 {
 public:
-	mapview(std::unique_ptr<tile_source> tiles);
+	mapview();
 	size_t zoom_level() const;
 	std::array<glm::uvec2, 2> visible_tiles() const;
+	void add_layer(mapview_layer * l);
 
 	// TODO:
 	// chcem aby mapview poskytoval funkcie umoznujuce jednoduchu implementaciu motion a button_press event
@@ -32,11 +34,9 @@ private:
 
 	void force_redraw();
 
-	std::unique_ptr<tile_source> _tiles;
+	std::vector<mapview_layer *> _layers;
 
 	size_t _zoom;  //!< map zoom level
 	glm::dvec2 _origin_pos;
 	glm::dvec2 _button_press_pos;
-
-	Pango::FontDescription _font;
 };

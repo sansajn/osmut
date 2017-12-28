@@ -1,6 +1,7 @@
 #pragma once
 #include "tile_source.hpp"
 
+// locally stored OSM tiles
 class locally_stored_tiles : public tile_source
 {
 public:

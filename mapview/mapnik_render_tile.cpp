@@ -87,7 +87,7 @@ Map make_map(size_t zoom)
 		parameters p;
 		p["type"] = "shape";
 //		p["file"] = "data/world/TM_WORLD_BORDERS-0.3";
-		p["file"] = "data/world/world_boundaries_m2";
+		p["file"] = "data/world/world_boundaries_m_3";
 		p["encoding"] = "utf8";
 
 		layer lyr{"world-layer"};
@@ -100,7 +100,7 @@ Map make_map(size_t zoom)
 	{
 		parameters p;
 		p["type"] = "shape";
-		p["file"] = "data/world/builtup_area2";
+		p["file"] = "data/world/builtup_area_3";
 		p["encoding"] = "utf8";
 
 		layer lyr{"builtup-area"};
@@ -113,7 +113,7 @@ Map make_map(size_t zoom)
 	{
 		parameters p;
 		p["type"] = "shape";
-		p["file"] = "data/world/places2";
+		p["file"] = "data/world/places_3";
 		p["encoding"] = "utf8";
 
 		layer lyr{"places-layer"};
