@@ -1,10 +1,14 @@
 env = Environment(
 	CCFLAGS=['-std=c++17', '-Wall', '-O0', '-g'],
-	LIBS=['boost_filesystem', 'boost_system', 'boost_log'],
+	LIBS=[
+		'pthread',
+		'boost_filesystem', 'boost_system', 'boost_log',
+		'bz2', 'z',  # osmium
+	],
 	CPPDEFINES=['BOOST_LOG_DYN_LINK']
 )
 
-env.ParseConfig('pkg-config gtkmm-3.0 icu-i18n --cflags --libs')
+env.ParseConfig('pkg-config --cflags --libs gtkmm-3.0 icu-i18n expat')
 env.ParseConfig('mapnik-config --libs')  # --cflags also includes -O2 so debug build is not possible
 
 env.Program('mapview', [
@@ -17,6 +21,7 @@ env.Program('mapview', [
 	'ortho_layer.cpp',
 	'center_cross.cpp',
 	'geo_point_layer.cpp',
+	'atm_layer.cpp',
 	'osm_layer.cpp',
 	'text.cpp'
 ])

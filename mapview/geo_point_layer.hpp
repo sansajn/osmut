@@ -11,7 +11,10 @@ public:
 	void draw(Cairo::RefPtr<Cairo::Context> const & cr) override;
 	void map_to_window_transform(glm::dvec2 const & T) override;
 	void zoom(size_t z) override;
+
+	// TODO: replace with iterator aproach (nieco ako view pri liste)
 	void add_point(glm::dvec2 const & p);  //!< param[in] p latlon position
+	std::vector<glm::dvec2> const & points() const;
 
 private:
 	std::vector<glm::dvec2> _points;  // [(lat, lon), ...]

@@ -2,10 +2,12 @@ závislosti:
 
 	libgtkmm-3.0-dev
 	libmapnik-dev
+	libosmium2-dev
 	gcc-7.0 (c++17 support)
 	libboost-all-dev (1.62)
 
 * počítanie dlaždíc na gpu
+* fake GPS modul (simulácia PGS modulu)
 * kešuj dlaždice
 * umozni zobrazit dáta zo satelitu
 * umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
@@ -22,6 +24,11 @@ závislosti:
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
+
+
+* (2017.12.28) zobraz všetky ATM v prahe
+
+zobrazovať budem s osm fajlu a k jeho parsovaniu použijem osmium
 
 
 * umožni zobraziť body na mape

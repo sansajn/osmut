@@ -11,6 +11,7 @@
 #include "mapnik_generated_tiles_mt.hpp"
 #include "center_cross.hpp"
 #include "geo_point_layer.hpp"
+#include "atm_layer.hpp"
 #include "text.hpp"
 
 using std::unique_ptr;
@@ -48,12 +49,10 @@ mapview_window::mapview_window()
 	text_layout::init(&_map);
 
 	_map.add_layer(new osm_layer{unique_ptr<tile_source>{new locally_stored_tiles{"data/tiles"}}});
-
-	// TODO: pouzi libosmium kniznicu k citaniu OSM suboru s atm poziciamy,
-	// vytvor point layer a zobraz vsetky atm
 	_map.add_layer(new geo_point_layer);
-
+	_map.add_layer(new atm_layer{"data/atm.osm"});
 	_map.add_layer(new center_cross);
+
 	show_all_children();
 }
 
