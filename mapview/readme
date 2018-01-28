@@ -10,13 +10,13 @@ závislosti:
 * fake GPS modul (simulácia PGS modulu)
 * kešuj dlaždice
 * umozni zobrazit dáta zo satelitu
-* umožni renderovať s OSM dát pre jednotlivé štáty/oblasťi
 * neblokujúci render dlaždíc
-* renderuj aj cestnu sieť (dialnice)
-* renderuj s databáze
-* renderuj s protobuf fajlu
-* renderuj s osm fajlu
-/* zobraz všetky ATM v prahe
+* renderuj názvy (ulíc)
+/* renderuj world boundaries ako shape-file a potom lokálne dáta s DB
+|* renderuj aj cestnu sieť (dialnice)
+|* renderuj s databáze
+|X renderuj s osm fajlu
+|* zobraz všetky ATM v prahe
 |* umožni zobraziť body na mape
 |* generuj niekoľko dlaždíc naraz (multithread)
 |* renderuj nie len boundaries, ale aj mestá a zastavané oblasti
@@ -24,6 +24,255 @@ závislosti:
 |* generuj dlaždice aj pomocou mapniku
 |* sprav zo samplu widget
 |* umožni zobraziť dlaždice uložené na disku 
+
+
+* renderuj world boundaries ako shape-file a potom lokálne dáta s DB
+
+
+
+
+* renderuj aj cestnu sieť (dialnice)
+
+render, ktorý bude čítať style, pozri
+
+	sanple_holesovice_render.cpp
+
+
+OSM highway popis
+
+	https://wiki.openstreetmap.org/wiki/Key:highway
+
+popis pre LineSymbolizer
+
+	https://github.com/mapnik/mapnik/wiki/LineSymbolizer
+
+pozri do štýlu 
+
+	Style name="roads"
+
+riadok 2648.
+
+pozri styl
+
+	data/holesovice_style.xml
+
+
+
+* renderuj aj cestnu sieť (dialnice)
+
+	https://github.com/openstreetmap/mapnik-stylesheets/blob/master/generate_tiles.py
+
+odkaz na komplexný render script
+
+	https://wiki.openstreetmap.org/wiki/Mapnik_Example
+
+GPS pozícia na mape
+
+	https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+
+
+* renderuj s databáze
+* renderuj s osm fajlu
+
+podľa
+
+	https://help.openstreetmap.org/questions/13250/what-is-the-correct-projection-i-should-use-with-mapnik
+
+potrebujem OSM dáta, ktoré sú v
+
+	WGS84 (EPSG 4326)
+
+a renderovať ich chcem ako
+
+	Mercator (EPSG 3857)
+
+tzn. v projekcii používanú google mapami
+
+(?) dáta vhodné k renderu ?
+
+	MEGA/private/geospatial/holesovice.osm
+
+(?) ako renderovať OSM dáta pomocou mapniku ?
+
+jeden tutoriál tu
+
+	https://wiki.openstreetmap.org/wiki/Mapnik/Rendering_OSM_XML_data_directly
+
+ukážka komplexného renderu (nejede s mapnikom 2.0+)
+
+	https://wiki.openstreetmap.org/wiki/Mapnik_Example
+
+Aktuálny mapnik (master) neobsahuje osm input plugin. Bol odstránený, takže render musí prebiehať s databázy (napr. sqlite)
+
+konverziu OSM dát do sqlite databázy realizujem príkazom
+
+	$ ogr2ogr -f SQLite data.sqlite data.osm -dsco SPATIALITE=YES
+
+napr.
+
+	$ ogr2ogr -f SQLite holesovice.db holesovice.osm -dsco SPATIALITE=YES
+
+vygenetovaná databáza obsahuje niekoľko tabuliek s geometriou
+
+	lines (cesty a chodníky)
+	multipolygons (oblasti  ako budovy, parky, atď. )
+	points (poi-e)
+	multilinestrings (cesty a chodníky)
+
+takýmto spôsobom potom v c++ vytvorím layer
+
+	// layers
+	{
+		parameters p;
+		p["type"] = "sqlite";
+		p["file"] = "data/holesovice.db";
+		p["table"] = "multipolygons";
+		p["encoding"] = "utf8";
+
+		layer lyr{"layer_0"};
+		lyr.set_datasource(datasource_cache::instance().create(p));
+		lyr.add_style("polygons");
+//		lyr.set_srs(srs_lcc);
+
+		m.add_layer(lyr);
+	}
+	
+(?) aké input plugini mapnik implementuje ?
+
+csv
+gdal
+geojson
+ogr
+pgraster
+postgis
+raster
+shape
+sqtlite
+topojson
+
+popis pluginou a odkazy na ne
+
+	https://github.com/mapnik/mapnik/wiki/PluginArchitecture
+
+
+(?) ako do mapniku pridám vrstvu, ktorá sa odkazuje na vektor bodou ?
+
+môžem použiť memory_datasource [Ukážka:
+
+	// vytvor a napln datasource
+	parameters params;
+	shared_ptr<memory_datasource> ds = make_shared<memory_datasource>(params);
+
+	context_ptr ctx = make_shared<context_type>();
+	feature_ptr f = feature_factory::create(ctx, 1);
+	geometry::geometry<double> geom;
+	if (from_wkt(wkt_albert_pt, geom))
+		f->set_geometry(move(geom));
+	else
+		throw logic_error{"unable to parse wkt geometry"};
+
+	ds->push(f);
+
+	// ...
+
+	{  // poi layer
+		layer lyr{"poi_layer"};
+		lyr.set_datasource(ds);
+		lyr.add_style("pois");
+		m.add_layer(lyr);
+	}
+
+--- koniec ukážky].
+
+mapnik::geometry::polygon<double> g;
+ukážky
+
+	https://github.com/mapnik/mapnik/blob/v3.0.x/test/unit/vertex_adapter/vertex_adapter.cpp
+
+
+unit testy k datasource pluginom
+
+	https://github.com/mapnik/mapnik/tree/v3.0.x/test/unit/datasource
+
+memory datasource
+
+	https://github.com/mapnik/mapnik/blob/v3.0.x/test/unit/datasource/memory.cpp
+
+
+(?) Ako použijem mapnik::feature ?
+
+//expressions_test.cpp
+template <typename Properties>
+mapnik::feature_ptr make_test_feature(mapnik::value_integer id, std::string const& wkt, Properties const& prop)
+{
+    auto ctx = std::make_shared<mapnik::context_type>();
+    mapnik::feature_ptr feature(mapnik::feature_factory::create(ctx, id));
+    mapnik::geometry::geometry<double> geom;
+    if (mapnik::from_wkt(wkt, geom))
+    {
+        feature->set_geometry(std::move(geom));
+    }
+
+    for (auto const& kv : prop)
+    {
+        feature->put_new(kv.first, kv.second);
+    }
+    return feature;
+}
+
+
+(?) WKT ?
+
+	https://en.wikipedia.org/wiki/Well-known_text
+
+
+(?) čo je mapnik-vector-tile ?
+
+	https://github.com/mapbox/mapnik-vector-tile
+
+
+
+(?) pozícia GPS na mape ?
+
+	https://help.openstreetmap.org/questions/2687/coordinates-to-pixels-based-on-zoom
+
+
+
+* (2018.01.06) správna transformácia/projekcia pri renderovaní pomocou mapnik-u
+
+Akú transformáciu mám použiť (akú používa OSM) ?
+
+Spherical Mercator (EPSG 3857)
+
+	http://openstreetmapdata.com/info/projections
+
+v qgise to je
+
+WGS84/Pseudo Mercator
++proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs
+
+zistil som zo stránky
+
+	https://epsg.io/3857
+
+
+(?) akú projekciu je potrebné nastaviť do mapniku, aby sedela s dlaždicami stiahnutými s OSM ?
+
+mapnik::Map treba vytvoriť s projekciou
+
+	Map m{size, size, "+init=epsg:3857"};
+
+hmmm, predchadzajúce nejede, ale je to to isté ako
+
+	Map m{size, size, MAPNIK_GMERC_PROJ};
+
+
+!! mapnik obsahuje funkciu
+
+static inline bool lonlat2merc(double * x, double * y , int point_count)
+
+v well_known_srs.hpp
+
 
 
 * (2017.12.28) zobraz všetky ATM v prahe
@@ -62,6 +311,10 @@ súradnice
 tzn. napr. nech M = N = 2^6*256 = 1538, potom
 
 	s = (1196.9756884, 830.6063416)
+
+\note predchadzajúce platí asi iba v prípade, že používam latlon projekciu (teda unpojected dáta), ale nemám to vôbec overené
+
+
 
 
 

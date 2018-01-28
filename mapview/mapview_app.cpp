@@ -8,6 +8,7 @@
 #include "mapview.hpp"
 #include "osm_layer.hpp"
 #include "locally_stored_tiles.hpp"
+#include "mapnik_generated_tiles.hpp"
 #include "mapnik_generated_tiles_mt.hpp"
 #include "center_cross.hpp"
 #include "geo_point_layer.hpp"
@@ -40,7 +41,6 @@ inline std::ostream & operator<<(std::ostream & o, glm::vec2 const & v)
 }
 
 mapview_window::mapview_window()
-//	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles{TILE_TMP}}}
 //	: _map{unique_ptr<tile_source>{new mapnik_generated_tiles_mt{TILE_TMP}}}
 {
 	update_title();
@@ -48,7 +48,13 @@ mapview_window::mapview_window()
 
 	text_layout::init(&_map);
 
-	_map.add_layer(new osm_layer{unique_ptr<tile_source>{new locally_stored_tiles{"data/tiles"}}});
+	// locally stored
+	unique_ptr<tile_source> tiles{new locally_stored_tiles{"data/tiles"}};
+
+	// mapnik generated
+	unique_ptr<tile_source> mapnik_tiles{new mapnik_generated_tiles{TILE_TMP}};
+
+	_map.add_layer(new osm_layer{std::move(mapnik_tiles)});
 	_map.add_layer(new geo_point_layer);
 	_map.add_layer(new atm_layer{"data/atm.osm"});
 	_map.add_layer(new center_cross);

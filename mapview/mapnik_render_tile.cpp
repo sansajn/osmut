@@ -41,6 +41,7 @@ Map make_map(size_t zoom)
 {
 	int size = int(pow(2.0, zoom)*256.0);
 
+//	Map m{size, size, MAPNIK_GMERC_PROJ};
 	Map m{size, size};
 	m.set_background(parse_color("steelblue"));
 
@@ -86,9 +87,9 @@ Map make_map(size_t zoom)
 	{
 		parameters p;
 		p["type"] = "shape";
-//		p["file"] = "data/world/TM_WORLD_BORDERS-0.3";
-		p["file"] = "data/world/world_boundaries_m_3";
+		p["file"] = "data/world_/world_boundaries_m";
 		p["encoding"] = "utf8";
+//		p["srs"] = "+init=epsg:3857";
 
 		layer lyr{"world-layer"};
 		lyr.set_datasource(datasource_cache::instance().create(p));
@@ -97,31 +98,31 @@ Map make_map(size_t zoom)
 		m.add_layer(move(lyr));
 	}
 
-	{
-		parameters p;
-		p["type"] = "shape";
-		p["file"] = "data/world/builtup_area_3";
-		p["encoding"] = "utf8";
+//	{
+//		parameters p;
+//		p["type"] = "shape";
+//		p["file"] = "data/world/builtup_area_3";
+//		p["encoding"] = "utf8";
 
-		layer lyr{"builtup-area"};
-		lyr.set_datasource(datasource_cache::instance().create(p));
-		lyr.add_style("builtup");
+//		layer lyr{"builtup-area"};
+//		lyr.set_datasource(datasource_cache::instance().create(p));
+//		lyr.add_style("builtup");
 
-		m.add_layer(move(lyr));
-	}
+//		m.add_layer(move(lyr));
+//	}
 
-	{
-		parameters p;
-		p["type"] = "shape";
-		p["file"] = "data/world/places_3";
-		p["encoding"] = "utf8";
+//	{
+//		parameters p;
+//		p["type"] = "shape";
+//		p["file"] = "data/world/places_3";
+//		p["encoding"] = "utf8";
 
-		layer lyr{"places-layer"};
-		lyr.set_datasource(datasource_cache::instance().create(p));
-		lyr.add_style("places");
+//		layer lyr{"places-layer"};
+//		lyr.set_datasource(datasource_cache::instance().create(p));
+//		lyr.add_style("places");
 
-		m.add_layer(move(lyr));
-	}
+//		m.add_layer(move(lyr));
+//	}
 
 	m.zoom_all();
 

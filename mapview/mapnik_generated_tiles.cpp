@@ -19,6 +19,7 @@ mapnik_generated_tiles::mapnik_generated_tiles(fs::path const & cache_dir)
 	: _cache_dir{cache_dir}
 	, _used_zoom{(size_t)-1}
 {
+	// TODO: set map projection
 	mapnik::datasource_cache::instance().register_datasources("/usr/lib/mapnik/3.0/input/");
 }
 

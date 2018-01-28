@@ -3,8 +3,14 @@
 /data/world/builtup_area*
 /data/world/world_boundaries*
 /data/world/places2*
+/data/world/places_*
+/data/world_/
 /mapview
 /sample_mapview
 /sample_mapnik
 /sample_render_to_tile
 /sample_mapnik_mt
+/sample_mapnik_memory_ds
+/sample_osm_render
+/sample_osm_style_render
+/sample_holesovice_render
