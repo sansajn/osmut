@@ -12,7 +12,11 @@ závislosti:
 * umozni zobrazit dáta zo satelitu
 * neblokujúci render dlaždíc
 * renderuj názvy (ulíc)
-/* renderuj world boundaries ako shape-file a potom lokálne dáta s DB
+* integruj OSM polygon render do mapview
+/* štýlovanie polygónou
+|* renderuj rôzne polygóny rôzne
+|* vlastný OSM render renderujúci polygóny
+|X renderuj world boundaries ako shape-file a potom lokálne dáta s DB
 |* renderuj aj cestnu sieť (dialnice)
 |* renderuj s databáze
 |X renderuj s osm fajlu
@@ -26,8 +30,108 @@ závislosti:
 |* umožni zobraziť dlaždice uložené na disku 
 
 
+
+* integruj OSM polygon render do mapview
+
+level 0: vyrenderuje mapu do jednej dlaždice
+level 1: vyrenderuje mapu do 2x2 dlaždíc
+...
+level N: vyrenderuje mapu do 2^Nx2^N dlaždíc
+
+lenže na to aby som mohol mapu renderovať do dlaždíc, potrebujem dáta rozdeliť
+tak, aby som vedel rýchlo získať všetky polygóny v dannej oblasti.
+
+
+* štýlovanie polygónou
+
+zatial iba farbu, ničo na spôsob key=value zoznamu na kazdom riadku
+
+použijem takúto lua syntax
+
+
+	building_color={120, 60, 98}
+	{building={'residential', 'private', 'yes'}, color=building_color}
+
+kde 
+
+	building={'residential', 'private', 'yes'}
+
+interpretujeme ako
+
+	if building=='residential' || building=='private' || ...
+		do something ...
+
+definícia objektu reprezentujúceho triedu polygónu je takáto
+
+	{color={R,G,B},
+	KEY1={VALUE, ...},
+	KEY2={VALUE, ...},
+	-- ...
+	KEYN={VALUE, ...}}
+
+kde KEY1, KEY2 až KEYN interpretujeme ako
+
+	if poly[KEY1]==VALUE and poly[KEY2]==VALUE and poly[KEYN]==VALUE
+		do something ...
+
+
+
+
+* renderuj rôzne polygóny rôzne
+
+inou farbou, napr.
+
+building=residential renderuj šedou #D9D0C9
+leisure=park renderuj ako #C8FACC
+
+
+* vlastný OSM render renderujúci polygóny
+
+sample_osm_polygon.cpp
+
+(?) ako transformovať vrcholy polygónu (gps súradnice) pred vykreslením ?
+
+zistím bounding box a ten potom roztiahnem na celý obrázok
+
+
 * renderuj world boundaries ako shape-file a potom lokálne dáta s DB
 
+(?) dáta pre world boundaries ?
+
+potrebujem aby boly používaly gmerc projekciu (EPSG:3857)
+
+	+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over";
+
+použijem world_boundaries-spherical balíček (používa sa pri rendere OSM máp) a
+na teraz budem predpokladať, že je v požadovanej projekcii.
+
+Tile pre 12 level trvá vyrenderovať 6s (boundaries a holesovice) a 14 level
+10s, 15 level 14s.
+
+(!) musím vytvorit utilitu, ktorá otestuje ako dlho trvá renderovanie dlaždíc
+pre jednotlivé levely.
+
+len boundaries:
+ 	 5 level = ~200ms
+ 	 8 level = ~270ms
+	10 level = ~700ms
+	11 level = ~1.8s
+	12 level = ~6s
+	13 level = ~6s
+	14 level = ~9s
+
+len holesovice:
+	 5 level = ~120ms
+	 8 level = ~500ms
+	10 level = ~2s
+
+na 13 levely pre boundaries sa stratia dáta.
+
+!! renderovanie mapnik-om je pri vyžších leveloch strašne pomalé, jediný spôsob
+ako ho použiť je nakŕmiť ho len malím množstvom dát.
+
+(?) Ako dlho trvať vyrenderovať všetky dlaždice v porovnaní s renderom na jeden
+krát ?
 
 
 
@@ -55,6 +159,31 @@ riadok 2648.
 pozri styl
 
 	data/holesovice_style.xml
+
+
+!!! mapnik je príliš pomalý k real-time renderu. Ako mapu vyrenderujem sám ?
+
+napr. pomocou agg
+
+OSM dáta obsahujú polygóny, polygón je definovaný ako uzatvorena krivka (way),
+napr.
+
+	<way id="29120703">
+		<nd ref="320363764"/>
+		<nd ref="320363766"/>
+		<nd ref="4750773430"/>
+		<nd ref="4750773422"/>
+		<nd ref="4750772014"/>
+		<nd ref="4750773421"/>
+		<nd ref="4750773429"/>
+		<nd ref="320363764"/>
+		<tag k="leisure" v="park"/>
+	</way>
+
+(?) ako tieto polygóny prečítam a detekujem programom ?
+
+prvý a posledný uzol musia byť zhodné
+
 
 
 

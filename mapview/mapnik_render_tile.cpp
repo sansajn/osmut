@@ -41,7 +41,6 @@ Map make_map(size_t zoom)
 {
 	int size = int(pow(2.0, zoom)*256.0);
 
-//	Map m{size, size, MAPNIK_GMERC_PROJ};
 	Map m{size, size};
 	m.set_background(parse_color("steelblue"));
 
@@ -87,7 +86,7 @@ Map make_map(size_t zoom)
 	{
 		parameters p;
 		p["type"] = "shape";
-		p["file"] = "data/world_/world_boundaries_m";
+		p["file"] = "data/maps/world_boundaries";
 		p["encoding"] = "utf8";
 //		p["srs"] = "+init=epsg:3857";
 

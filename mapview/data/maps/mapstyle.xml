@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map background-color="#f2efe9" srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+	
+	<!-- world boundaries -->
+	<Style name="state_polygons">
+		<Rule>
+			<PolygonSymbolizer fill="darkgreen" />
+		</Rule>
+	</Style>
+	
+	<Layer name="world boundaries" srs="+init=epsg:3857">
+		<StyleName>state_polygons</StyleName>
+		<Datasource>
+			<Parameter name="type">shape</Parameter>
+			<Parameter name="file">data/maps/world_boundaries</Parameter>
+		</Datasource>
+	</Layer>
+	
+	<!-- local maps -->
+	<Style name="polygons">
+		<!-- just see what is missing -->
+		<Rule>
+			<PolygonSymbolizer fill="#ff54ff" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'park' or [leisure] = 'garden'</Filter>
+			<PolygonSymbolizer fill="#c8facc" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'golf_course'</Filter>
+			<PolygonSymbolizer fill="#b5e3b5" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'pitch'</Filter>
+			<PolygonSymbolizer fill="#aae0cb" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'recreation_ground' or [leisure] = 'sports_centre' or [leisure] = 'playground'</Filter>
+			<PolygonSymbolizer fill="#dffce2" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'nature_reserve'</Filter>
+			<PolygonSymbolizer fill="#add19e" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[leisure] = 'common'</Filter>
+			<PolygonSymbolizer fill="#cdebb0" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'residential'</Filter>
+			<PolygonSymbolizer fill="#e0dfdf" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'grass' or [landuse] = 'village_green'</Filter>
+			<PolygonSymbolizer fill="#cdebb0" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'industrial' or [landuse] = 'railway'</Filter>
+			<PolygonSymbolizer fill="#ebdbe8" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'brownfield' or [landuse] = 'construction'</Filter>
+			<PolygonSymbolizer fill="#c7c7b4" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'forest'</Filter>
+			<PolygonSymbolizer fill="#b5e3b5" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'greenfield'</Filter>
+			<PolygonSymbolizer fill="#f2efe9" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[landuse] = 'commercial'</Filter>
+			<PolygonSymbolizer fill="#f2dad9" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[natural] = 'bare_rock'</Filter>
+			<PolygonSymbolizer fill="#eee5dc" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[natural] = 'scrub'</Filter>
+			<PolygonSymbolizer fill="#b5e3b5" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[amenity] = 'fire_station' or [amenity] = 'bus_station'</Filter>
+			<PolygonSymbolizer fill="#f2efe9" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[amenity] = 'parking'</Filter>
+			<PolygonSymbolizer fill="#eeeeee" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[amenity] = 'grave_yard'</Filter>
+			<PolygonSymbolizer fill="#aacbaf" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[amenity] = 'shelter'</Filter>
+			<PolygonSymbolizer fill="#dddde8" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[amenity] = 'marketplace'</Filter>
+			<PolygonSymbolizer fill="#ffd6d1" />
+		</Rule>
+		
+	</Style>
+	
+	<Style name="buildings">
+		<Rule>
+			<Filter>[building]</Filter>
+			<PolygonSymbolizer fill="#d9d0c9" />
+		</Rule>
+	</Style>
+	
+	<Style name="roads">
+		<!--
+		<Rule>
+			<LineSymbolizer />
+		</Rule>
+		-->
+		
+		<Rule>  <!-- 20000 az 5000 -->
+			<Filter>[highway] = 'motorway'</Filter>
+			<LineSymbolizer stroke="#506077" stroke-width="10" stroke-linejoin="round" />
+		</Rule>
+		
+		<Rule>  <!-- 20000 az 5000 --> 
+			<Filter>[highway] = 'trunk'</Filter>
+			<LineSymbolizer stroke="#477147" stroke-width="11.5" stroke-linejoin="round" />
+			<LineSymbolizer stroke="#a9dba9" stroke-width="11.0" stroke-linejoin="round" 
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>  <!-- 20000 az 5000 -->
+			<Filter>[highway] = 'primary'</Filter>
+			<!--
+			<LineSymbolizer stroke="#8d4346" stroke-width="11.5" stroke-linejoin="round" />
+			-->
+			
+			<LineSymbolizer stroke="#fcd6a4" stroke-width="11.0" stroke-linejoin="round" 
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>  <!-- 25000 az 5000 -->
+			<Filter>[highway] = 'secondary'</Filter>
+			<!--
+			<LineSymbolizer stroke="#a37b48" stroke-width="11.5" stroke-linejoin="round"
+				stroke-linecap="round" />
+			-->
+			
+			<LineSymbolizer stroke="#f7fabf" stroke-width="11.0" stroke-linejoin="round"
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>  <!-- 25000 az 5000 -->
+			<Filter>[highway] = 'tertiary'</Filter>
+			<!--
+			<LineSymbolizer stroke="#000000" stroke-width="11" stroke-linejoin="round"
+				stroke-linecap="round" />
+			-->
+			
+			<LineSymbolizer stroke="#fefefe" stroke-width="9.4" stroke-linejoin="round"
+				stroke-linecap="round" />
+		</Rule>
+		
+		<!-- <Rule>
+			<Filter>[railway] = 'rail'</Filter>
+			<LineSymbolizer stroke="#000aaa" stroke-width="2.0" stroke-dasharray="5,2" />
+		</Rule> -->
+		
+		<Rule>  <!-- 25000 az 5000 -->
+			<Filter>[highway] = 'residential'</Filter>
+			<!--
+			<LineSymbolizer stroke="#000bbb" stroke-width="11.0" stroke-linejoin="round"
+				stroke-linecap="round" />
+			-->
+			
+			<LineSymbolizer stroke="#ffffff" stroke-width="9.4" stroke-linejoin="round"
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>  <!-- 25000 az 1000 -->
+			<Filter>[highway] = 'service'</Filter>
+			<LineSymbolizer stroke="#fefefe" stroke-width="6.0" stroke-linejoin="round"
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>  <!-- 20000 az 10000 -->
+			<Filter>[highway] = 'pedestrian'</Filter>
+			<!--
+			<LineSymbolizer stroke="grey" stroke-width="6.5" stroke-linejoin="round"
+				stroke-linecap="round" />
+			-->
+			
+			<LineSymbolizer stroke="#dddce8" stroke-width="5.5" stroke-linejoin="round"
+				stroke-linecap="round" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[highway] = 'footway'</Filter>
+			<LineSymbolizer stroke="#fa8072" stroke-width="2.0" stroke-dasharray="1,3" />
+		</Rule>
+		
+		<Rule>  <!-- 20000 -->
+			<Filter>[highway] = 'steps'</Filter>
+			<LineSymbolizer stroke="salmon" stroke-width="5.0" stroke-dasharray="2,1" />
+		</Rule>
+		
+		<Rule>
+			<Filter>[waterway] = 'river'</Filter>
+			<LineSymbolizer stroke="#aa93c8" stroke-width="2.0" stroke-dasharray="2,2" />
+		</Rule>
+		
+	</Style>
+</Map>

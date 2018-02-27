@@ -1,4 +1,6 @@
+/libagg.a
 /data/tiles/
+/data/maps/
 /output/
 /data/world/builtup_area*
 /data/world/world_boundaries*
@@ -13,4 +15,6 @@
 /sample_mapnik_memory_ds
 /sample_osm_render
 /sample_osm_style_render
+/sample_osm_polygon
+/sample_osm_poly_styled
 /sample_holesovice_render

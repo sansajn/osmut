@@ -1,5 +1,7 @@
+# mapnik, osmium, agg
 env = Environment(
-	CCFLAGS=['-std=c++17', '-Wall', '-O0', '-g'],
+	CCFLAGS=['-std=c++17', '-O0', '-g', '-Wall', '-Wno-register'],
+	CPPPATH=['agg-2.5/include'],
 	LIBS=[
 		'pthread',
 		'boost_filesystem', 'boost_system', 'boost_log',
@@ -12,10 +14,15 @@ env = Environment(
 env.ParseConfig('pkg-config --cflags --libs gtkmm-3.0 icu-i18n expat')
 env.ParseConfig('mapnik-config --libs')  # --cflags also includes -O2 so debug build is not possible
 
+agg_lib = env.StaticLibrary('agg', [
+	Glob('agg-2.5/src/*.cpp'),
+])
+
+mapnik_render_tile_o = env.Object('mapnik_render_tile.cpp')
+
 env.Program('mapview', [
 	'mapview_app.cpp',
 	'mapview.cpp',
-	'mapnik_render_tile.cpp',
 	'locally_stored_tiles.cpp',
 	'mapnik_generated_tiles.cpp',
 	'mapnik_generated_tiles_mt.cpp',
@@ -24,7 +31,8 @@ env.Program('mapview', [
 	'geo_point_layer.cpp',
 	'atm_layer.cpp',
 	'osm_layer.cpp',
-	'text.cpp'
+	'text.cpp',
+	mapnik_render_tile_o
 ])
 
 # samples
@@ -36,3 +44,7 @@ env.Program('sample_osm_render.cpp')
 env.Program('sample_mapnik_memory_ds.cpp')
 env.Program('sample_osm_style_render.cpp')
 env.Program('sample_holesovice_render.cpp')
+env.Program('style_render.cpp')
+#env.Program(['render_bench.cpp', mapnik_render_tile_o])
+env.Program(['sample_osm_polygon.cpp', agg_lib])
+env.Program(['sample_osm_poly_styled.cpp', agg_lib])
