@@ -4,7 +4,7 @@
 #include <osmium/handler.hpp>
 #include <osmium/visitor.hpp>
 #include <osmium/io/any_input.hpp>
-#include "road_reader.hpp"
+#include "road.hpp"
 
 using std::string;
 using std::vector;
@@ -73,7 +73,7 @@ void road_reader::read(string const & osm_file)
 			osmium::Location & loc = _nodes[nid];
 			if (loc.valid())
 			{
-				point p{loc.lon(), loc.lat()};
+				vec2 p{loc.lon(), loc.lat()};
 				expand(_bbox, p);
 				r.geometry.push_back(p);
 			}

@@ -1,6 +1,9 @@
 * umožni štýlovať cesty
-* zoom
-* pan (posuvanie mapy)
+* zoom to center point
+* zoom to point
+* pridaj dalšie cesty
+ok - * zoom
+ok - * pan (posuvanie mapy)
 ok - * kresly cesty podla sajty s OSM
 ok - * kresly cesty podľa typu rôznými farbami
 ok - * prečítaj aj typ cesty

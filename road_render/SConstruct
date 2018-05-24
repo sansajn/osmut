@@ -14,7 +14,7 @@ agg_lib = env.StaticLibrary('agg', [
 	Glob('agg-2.5/src/platform/X11/*.cpp')
 ])
 
-objs = env.Object(['road_reader.cpp'])
+objs = env.Object(['road.cpp'])
 
 env.Program(['road_render.cpp', objs, agg_lib])
 env.Program(['conv_stroke.cpp', objs, agg_lib])
