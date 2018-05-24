@@ -1,0 +1,8 @@
+* umožni štýlovať cesty
+* zoom
+* pan (posuvanie mapy)
+ok - * kresly cesty podla sajty s OSM
+ok - * kresly cesty podľa typu rôznými farbami
+ok - * prečítaj aj typ cesty
+ok - * import road data
+ok - * replace conv_stroke data with road data

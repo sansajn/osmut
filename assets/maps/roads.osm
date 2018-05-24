@@ -1,0 +1,476 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osm version='0.6' upload='true' generator='JOSM'>
+  
+  <node id='79438151' timestamp='2011-07-18T08:59:07Z' user='eumiro' visible='true' version='6' lat='48.1119139' lon='17.112238' />
+  <node id='177383544' timestamp='2013-08-18T23:15:17Z' user='aceman444' visible='true' version='5' lat='48.1138762' lon='17.1094806' />
+  <node id='177383552' timestamp='2011-11-29T16:06:28Z' user='YuraH' visible='true' version='3' lat='48.113903' lon='17.1104094' />
+  <node id='177383554' timestamp='2011-11-29T16:06:28Z' user='YuraH' visible='true' version='3' lat='48.1140035' lon='17.1105711' />
+  <node id='177383559' timestamp='2014-12-29T17:48:48Z' user='aceman444' visible='true' version='4' lat='48.1152688' lon='17.1107143' />
+  <node id='177383569' timestamp='2011-10-01T16:04:00Z' user='YuraH' visible='true' version='4' lat='48.1159499' lon='17.1113669' />
+  <node id='177383575' timestamp='2015-10-17T21:02:53Z' user='aceman444' visible='true' version='4' lat='48.1152417' lon='17.1113172' />
+  <node id='177383582' timestamp='2015-10-17T21:02:53Z' user='aceman444' visible='true' version='4' lat='48.1152237' lon='17.1117181' />
+  <node id='177383588' timestamp='2010-07-19T14:27:06Z' user='nikolay_komodov' visible='true' version='2' lat='48.1146778' lon='17.1117025' />
+  <node id='177383592' timestamp='2011-11-29T16:06:28Z' user='YuraH' visible='true' version='4' lat='48.1144785' lon='17.1115083' />
+  <node id='177383598' timestamp='2011-11-29T16:06:28Z' user='YuraH' visible='true' version='3' lat='48.1144844' lon='17.1112148' />
+  <node id='177383605' timestamp='2014-12-29T17:48:48Z' user='aceman444' visible='true' version='4' lat='48.1145056' lon='17.1106665' />
+  <node id='177388261' timestamp='2011-12-02T10:16:54Z' user='YuraH' visible='true' version='3' lat='48.1138603' lon='17.1101248' />
+  <node id='177388266' timestamp='2013-08-18T23:15:17Z' user='aceman444' visible='true' version='3' lat='48.1130318' lon='17.1091335' />
+  <node id='177388269' timestamp='2011-12-02T10:16:54Z' user='YuraH' visible='true' version='3' lat='48.1138883' lon='17.1091565' />
+  <node id='177388277' timestamp='2013-07-31T16:46:46Z' user='roman7777' visible='true' version='6' lat='48.1160607' lon='17.1125457' />
+  <node id='271329400' timestamp='2012-02-07T19:59:06Z' user='zemiakovysalat' visible='true' version='3' lat='48.1147089' lon='17.1157421' />
+  <node id='271329401' timestamp='2012-02-07T19:59:06Z' user='zemiakovysalat' visible='true' version='2' lat='48.1152986' lon='17.1152915' />
+  <node id='271329402' timestamp='2008-06-19T20:07:03Z' user='Jožo Schwarz' visible='true' version='1' lat='48.1147052' lon='17.1135786' />
+  <node id='271329403' timestamp='2013-05-19T11:43:17Z' user='Jožo Schwarz' visible='true' version='2' lat='48.1141024' lon='17.113998' />
+  <node id='271329404' timestamp='2011-10-01T16:04:02Z' user='YuraH' visible='true' version='3' lat='48.1134371' lon='17.112356' />
+  <node id='344452563' timestamp='2011-10-01T16:04:11Z' user='YuraH' visible='true' version='2' lat='48.1151894' lon='17.1124753' />
+  <node id='447874852' timestamp='2011-10-01T16:04:11Z' user='YuraH' visible='true' version='3' lat='48.1152925' lon='17.1113207' />
+  <node id='447874860' timestamp='2009-07-25T16:57:59Z' user='ventYl' visible='true' version='1' lat='48.1145614' lon='17.1099943' />
+  <node id='447874862' timestamp='2011-12-02T10:16:56Z' user='YuraH' visible='true' version='2' lat='48.1138578' lon='17.1100203' />
+  <node id='447874863' timestamp='2009-07-25T16:57:59Z' user='ventYl' visible='true' version='1' lat='48.1145568' lon='17.1100703' />
+  <node id='447874864' timestamp='2009-07-25T16:57:59Z' user='ventYl' visible='true' version='1' lat='48.1153879' lon='17.1100657' />
+  <node id='447874867' timestamp='2009-07-25T16:58:00Z' user='ventYl' visible='true' version='1' lat='48.1145155' lon='17.1100673' />
+  <node id='447874870' timestamp='2014-12-29T17:48:51Z' user='aceman444' visible='true' version='3' lat='48.114459' lon='17.1106603' />
+  <node id='447874872' timestamp='2011-11-29T16:06:29Z' user='YuraH' visible='true' version='2' lat='48.1145301' lon='17.1116397' />
+  <node id='447874873' timestamp='2013-08-18T23:15:24Z' user='aceman444' visible='true' version='2' lat='48.1143291' lon='17.1094727' />
+  <node id='447874876' timestamp='2011-12-02T10:16:56Z' user='YuraH' visible='true' version='2' lat='48.1138804' lon='17.1092876' />
+  <node id='1324993605' timestamp='2011-06-14T13:36:48Z' user='eumiro' visible='true' version='1' lat='48.1125687' lon='17.1122933' />
+  <node id='1324993630' timestamp='2011-12-02T10:16:54Z' user='YuraH' visible='true' version='2' lat='48.1134052' lon='17.1091226' />
+  <node id='1324993668' timestamp='2011-10-01T16:03:59Z' user='YuraH' visible='true' version='2' lat='48.1138641' lon='17.1123983' />
+  <node id='1324993673' timestamp='2011-06-14T13:36:49Z' user='eumiro' visible='true' version='1' lat='48.1139147' lon='17.1113044' />
+  <node id='1324993711' timestamp='2011-06-14T13:36:49Z' user='eumiro' visible='true' version='1' lat='48.1149046' lon='17.109234' />
+  <node id='1324993713' timestamp='2011-06-14T13:36:50Z' user='eumiro' visible='true' version='1' lat='48.1149549' lon='17.1091805' />
+  <node id='1365203181' timestamp='2011-07-18T08:59:04Z' user='eumiro' visible='true' version='1' lat='48.1120476' lon='17.1122527' />
+  <node id='1450882793' timestamp='2011-10-01T16:03:26Z' user='YuraH' visible='true' version='1' lat='48.1138723' lon='17.1121917' />
+  <node id='1450882801' timestamp='2011-10-01T16:03:26Z' user='YuraH' visible='true' version='1' lat='48.115198' lon='17.1122892' />
+  <node id='1528067348' timestamp='2011-12-02T10:16:32Z' user='YuraH' visible='true' version='1' lat='48.1134243' lon='17.110087' />
+  <node id='1528067350' timestamp='2011-12-02T10:16:32Z' user='YuraH' visible='true' version='1' lat='48.113465' lon='17.1091286' />
+  <node id='1528067371' timestamp='2011-12-02T10:16:32Z' user='YuraH' visible='true' version='1' lat='48.1136086' lon='17.1090465' />
+  <node id='1528067385' timestamp='2011-12-02T10:16:33Z' user='YuraH' visible='true' version='1' lat='48.1138275' lon='17.1090682' />
+  <node id='1954645725' timestamp='2012-10-09T10:23:43Z' user='YuraH' visible='true' version='1' lat='48.115277' lon='17.115308' />
+  <node id='2066954757' timestamp='2012-12-14T19:12:38Z' user='Jose Riha' visible='true' version='1' lat='48.1130059' lon='17.112986' />
+  <node id='2066954759' timestamp='2012-12-14T19:12:38Z' user='Jose Riha' visible='true' version='1' lat='48.1130166' lon='17.1124924' />
+  <node id='2066954761' timestamp='2012-12-14T19:12:38Z' user='Jose Riha' visible='true' version='1' lat='48.1130183' lon='17.1123258' />
+  <node id='2311089905' timestamp='2013-05-19T11:43:13Z' user='Jožo Schwarz' visible='true' version='1' lat='48.1139393' lon='17.11379' />
+  <node id='2311089907' timestamp='2013-05-19T11:43:13Z' user='Jožo Schwarz' visible='true' version='1' lat='48.1140035' lon='17.1139731' />
+  <node id='2311089915' timestamp='2013-05-19T11:43:13Z' user='Jožo Schwarz' visible='true' version='1' lat='48.1148867' lon='17.1141026' />
+  <node id='2311089919' timestamp='2014-01-12T07:38:10Z' user='kayle' visible='true' version='2' lat='48.115001' lon='17.1129233' />
+  <node id='2311089920' timestamp='2013-05-19T11:43:13Z' user='Jožo Schwarz' visible='true' version='1' lat='48.1151173' lon='17.1147682' />
+  <node id='2423552565' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1132166' lon='17.1102706' />
+  <node id='2423552567' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1132817' lon='17.1100842' />
+  <node id='2423552570' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.113329' lon='17.1091232' />
+  <node id='2423552579' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1139014' lon='17.1100234' />
+  <node id='2423552581' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1140162' lon='17.1092153' />
+  <node id='2423552583' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1140969' lon='17.1092203' />
+  <node id='2423552586' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1142614' lon='17.1092304' />
+  <node id='2423552588' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1143375' lon='17.1092351' />
+  <node id='2423552590' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1144259' lon='17.1092406' />
+  <node id='2423552595' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1145786' lon='17.10925' />
+  <node id='2423552597' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1147452' lon='17.1092603' />
+  <node id='2423552598' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1147548' lon='17.1088638' />
+  <node id='2423552599' timestamp='2013-08-18T23:12:18Z' user='aceman444' visible='true' version='1' lat='48.1148196' lon='17.1092649' />
+  <node id='2423552610' timestamp='2013-08-18T23:12:19Z' user='aceman444' visible='true' version='1' lat='48.1151355' lon='17.1095481' />
+  <node id='2423552612' timestamp='2013-08-18T23:12:19Z' user='aceman444' visible='true' version='1' lat='48.1151984' lon='17.1092983' />
+  <node id='2423552613' timestamp='2013-08-18T23:12:19Z' user='aceman444' visible='true' version='1' lat='48.1152082' lon='17.1094568' />
+  <node id='2457553853' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1146886' lon='17.1128179' />
+  <node id='2457553854' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1146927' lon='17.1125602' />
+  <node id='2457553855' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1146946' lon='17.1124407' />
+  <node id='2457553856' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1147377' lon='17.1129047' />
+  <node id='2457553857' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1148796' lon='17.1129148' />
+  <node id='2457553858' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1148901' lon='17.1126185' />
+  <node id='2457553859' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.115043' lon='17.1129263' />
+  <node id='2457553860' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1150557' lon='17.11264' />
+  <node id='2457553861' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.115207' lon='17.1129379' />
+  <node id='2457553863' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1152192' lon='17.1126433' />
+  <node id='2457553865' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.115366' lon='17.1129492' />
+  <node id='2457553866' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.115376' lon='17.1126532' />
+  <node id='2457553869' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1155322' lon='17.112961' />
+  <node id='2457553870' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.11554' lon='17.1126664' />
+  <node id='2457553871' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1156913' lon='17.1129722' />
+  <node id='2457553875' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1' lat='48.1158492' lon='17.1129834' />
+  <node id='2934340416' timestamp='2014-06-26T14:56:20Z' user='Krumpi' visible='true' version='1' lat='48.1160503' lon='17.1129975' />
+  <node id='3816364009' timestamp='2015-11-03T22:58:14Z' user='aceman444' visible='true' version='1' lat='48.1159839' lon='17.1125395' />
+  <node id='3861509077' timestamp='2015-11-26T21:52:55Z' user='aceman444' visible='true' version='1' lat='48.1153147' lon='17.1095339' />
+  <node id='3861509078' timestamp='2015-11-26T21:52:55Z' user='aceman444' visible='true' version='1' lat='48.1153493' lon='17.1093513' />
+  <way id='17085289' timestamp='2014-12-29T17:48:39Z' user='aceman444' visible='true' version='6'>
+    <nd ref='177383605' />
+    <nd ref='177383598' />
+    <nd ref='177383592' />
+    <nd ref='447874872' />
+    <nd ref='177383588' />
+    <nd ref='177383582' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='oneway' v='yes' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+  </way>
+  <way id='17085291' timestamp='2015-05-25T22:18:05Z' user='aceman444' visible='true' version='8'>
+    <nd ref='177383569' />
+    <nd ref='447874852' />
+    <nd ref='177383575' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='oneway' v='yes' />
+    <tag k='source:maxspeed' v='sign' />
+  </way>
+  <way id='17086142' timestamp='2015-11-26T21:52:58Z' user='aceman444' visible='true' version='9'>
+    <nd ref='177388266' />
+    <nd ref='2423552570' />
+    <nd ref='1324993630' />
+    <nd ref='1528067350' />
+    <nd ref='1528067371' />
+    <nd ref='1528067385' />
+    <nd ref='177388269' />
+    <nd ref='447874876' />
+    <nd ref='177383544' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Rovniankova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+    <tag k='wikipedia' v='sk:Rovniankova ulica (Bratislava)' />
+  </way>
+  <way id='38079573' timestamp='2014-12-29T17:48:38Z' user='aceman444' visible='true' version='4'>
+    <nd ref='177383575' />
+    <nd ref='177383559' />
+    <nd ref='177383605' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='oneway' v='yes' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+  </way>
+  <way id='38079575' timestamp='2014-12-29T17:48:39Z' user='aceman444' visible='true' version='5'>
+    <nd ref='177383575' />
+    <nd ref='177383582' />
+    <nd ref='1450882801' />
+    <nd ref='344452563' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+  </way>
+  <way id='38079582' timestamp='2013-08-18T23:14:43Z' user='aceman444' visible='true' version='2'>
+    <nd ref='447874862' />
+    <nd ref='447874863' />
+    <nd ref='447874860' />
+    <nd ref='447874864' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='117653736' timestamp='2014-12-29T17:48:38Z' user='aceman444' visible='true' version='3'>
+    <nd ref='1324993668' />
+    <nd ref='1450882793' />
+    <nd ref='1324993673' />
+    <tag k='highway' v='residential' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+  </way>
+  <way id='117653761' timestamp='2015-11-26T21:52:59Z' user='aceman444' visible='true' version='3'>
+    <nd ref='1324993713' />
+    <nd ref='1324993711' />
+    <nd ref='2423552599' />
+    <nd ref='2423552597' />
+    <nd ref='2423552595' />
+    <nd ref='2423552590' />
+    <nd ref='2423552588' />
+    <nd ref='2423552586' />
+    <nd ref='2423552583' />
+    <nd ref='2423552581' />
+    <nd ref='177388269' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='driveway' />
+  </way>
+  <way id='196353561' timestamp='2013-08-18T23:14:17Z' user='aceman444' visible='true' version='2'>
+    <nd ref='2066954761' />
+    <nd ref='2066954759' />
+    <nd ref='2066954757' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='driveway' />
+    <tag k='source' v='kapor2' />
+  </way>
+  <way id='204483249' timestamp='2015-05-25T22:18:05Z' user='aceman444' visible='true' version='5'>
+    <nd ref='1324993605' />
+    <nd ref='1365203181' />
+    <nd ref='79438151' />
+    <tag k='abutters' v='residential' />
+    <tag k='highway' v='tertiary' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='lanes' v='2' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='42142102.img' />
+  </way>
+  <way id='206446184' timestamp='2013-09-13T23:38:01Z' user='aceman444' visible='true' version='3'>
+    <nd ref='271329400' />
+    <nd ref='1954645725' />
+    <nd ref='271329401' />
+    <nd ref='2311089920' />
+    <nd ref='2311089915' />
+    <nd ref='271329402' />
+    <nd ref='271329403' />
+    <nd ref='2311089907' />
+    <nd ref='2311089905' />
+    <nd ref='271329404' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Bradáčova' />
+    <tag k='source:maxspeed' v='sign' />
+  </way>
+  <way id='207091218' timestamp='2015-05-25T22:18:06Z' user='aceman444' visible='true' version='6'>
+    <nd ref='271329404' />
+    <nd ref='1324993668' />
+    <nd ref='2457553855' />
+    <tag k='abutters' v='residential' />
+    <tag k='highway' v='tertiary' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='lanes' v='3' />
+    <tag k='lanes:backward' v='2' />
+    <tag k='lanes:forward' v='1' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='42142102.img' />
+    <tag k='turn:lanes:backward' v='slight_left|through' />
+  </way>
+  <way id='207091219' timestamp='2015-05-25T22:18:06Z' user='aceman444' visible='true' version='2'>
+    <nd ref='1324993605' />
+    <nd ref='2066954761' />
+    <nd ref='271329404' />
+    <tag k='abutters' v='residential' />
+    <tag k='highway' v='tertiary' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='lanes' v='2' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='42142102.img' />
+  </way>
+  <way id='234051037' timestamp='2015-11-26T21:52:58Z' user='aceman444' visible='true' version='4'>
+    <nd ref='1324993713' />
+    <nd ref='2423552612' />
+    <nd ref='2423552613' />
+    <nd ref='2423552610' />
+    <nd ref='447874873' />
+    <nd ref='177383544' />
+    <nd ref='447874862' />
+    <nd ref='177388261' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Rovniankova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='42142102.img' />
+    <tag k='wikipedia' v='sk:Rovniankova ulica (Bratislava)' />
+  </way>
+  <way id='234051067' timestamp='2013-08-18T23:12:27Z' user='aceman444' visible='true' version='1'>
+    <nd ref='447874873' />
+    <nd ref='2423552588' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='driveway' />
+  </way>
+  <way id='234051102' timestamp='2015-11-26T21:52:57Z' user='aceman444' visible='true' version='4'>
+    <nd ref='2423552565' />
+    <nd ref='2423552567' />
+    <nd ref='1528067348' />
+    <nd ref='177388261' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Rovniankova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+    <tag k='wikipedia' v='sk:Rovniankova ulica (Bratislava)' />
+  </way>
+  <way id='234051133' timestamp='2015-11-26T21:52:59Z' user='aceman444' visible='true' version='2'>
+    <nd ref='2423552597' />
+    <nd ref='2423552598' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+    <tag k='source' v='bing' />
+  </way>
+  <way id='237883572' timestamp='2014-06-26T14:56:20Z' user='Krumpi' visible='true' version='3'>
+    <nd ref='177388277' />
+    <nd ref='2934340416' />
+    <nd ref='2457553875' />
+    <nd ref='2457553871' />
+    <nd ref='2457553869' />
+    <nd ref='2457553865' />
+    <nd ref='2457553861' />
+    <nd ref='2457553859' />
+    <nd ref='2311089919' />
+    <nd ref='2457553857' />
+    <nd ref='2457553856' />
+    <nd ref='2457553853' />
+    <nd ref='2457553854' />
+    <nd ref='2457553855' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='42142102.img' />
+  </way>
+  <way id='237883573' timestamp='2013-09-13T23:37:59Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553865' />
+    <nd ref='2457553866' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='237883574' timestamp='2013-09-13T23:38:00Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553861' />
+    <nd ref='2457553863' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='237883575' timestamp='2013-09-13T23:38:00Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553869' />
+    <nd ref='2457553870' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='237883576' timestamp='2013-09-13T23:38:00Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553857' />
+    <nd ref='2457553858' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='237883581' timestamp='2013-09-13T23:38:00Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553859' />
+    <nd ref='2457553860' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+  </way>
+  <way id='319441183' action='modify' timestamp='2014-12-29T17:48:35Z' user='aceman444' visible='true' version='1'>
+    <nd ref='177388261' />
+    <nd ref='177383552' />
+    <nd ref='177383554' />
+    <nd ref='447874870' />
+    <nd ref='177383605' />
+    <tag k='goods' v='yes' />
+    <tag k='hgv' v='delivery' />
+    <tag k='highway' v='residential' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='maxspeed' v='30' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:maxspeed' v='sign' />
+    <tag k='source:name' v='guess from addresses of neighbouring houses imported' />
+  </way>
+  <way id='348426424' timestamp='2015-11-03T22:58:16Z' user='aceman444' visible='true' version='2'>
+    <nd ref='344452563' />
+    <nd ref='3816364009' />
+    <nd ref='177388277' />
+    <tag k='abutters' v='residential' />
+    <tag k='highway' v='tertiary' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='lanes' v='2' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='42142102.img' />
+  </way>
+  <way id='348426427' timestamp='2015-05-25T22:17:40Z' user='aceman444' visible='true' version='1'>
+    <nd ref='2457553855' />
+    <nd ref='344452563' />
+    <tag k='abutters' v='residential' />
+    <tag k='highway' v='tertiary' />
+    <tag k='is_in' v='Bratislava - Petržalka' />
+    <tag k='lanes' v='3' />
+    <tag k='lanes:backward' v='1' />
+    <tag k='lanes:forward' v='2' />
+    <tag k='name' v='Romanova' />
+    <tag k='source:name' v='42142102.img' />
+    <tag k='turn:lanes:forward' v='slight_left|through' />
+  </way>
+  <way id='382948515' timestamp='2015-11-26T21:52:56Z' user='aceman444' visible='true' version='1'>
+    <nd ref='3861509078' />
+    <nd ref='3861509077' />
+    <nd ref='2423552610' />
+    <tag k='highway' v='service' />
+    <tag k='service' v='parking_aisle' />
+    <tag k='source' v='survey' />
+  </way>
+  <relation id='1774376' timestamp='2016-07-08T21:30:31Z' user='aceman444' visible='true' version='7'>
+    <member type='relation' ref='1774375' role='' />
+    <member type='relation' ref='1774374' role='' />
+    <tag k='name' v='Bus 83' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='83' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+  <relation id='2541397' timestamp='2014-01-04T21:10:19Z' user='aceman444' visible='true' version='2'>
+    <member type='relation' ref='2520733' role='' />
+    <member type='relation' ref='2520695' role='' />
+    <tag k='name' v='Bus 95' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='95' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+  <relation id='2923083' timestamp='2016-07-08T21:30:31Z' user='aceman444' visible='true' version='7'>
+    <member type='relation' ref='136160' role='' />
+    <member type='relation' ref='2922993' role='' />
+    <tag k='name' v='Bus 99' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='99' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+  <relation id='3235182' timestamp='2014-10-11T21:06:51Z' user='aceman444' visible='true' version='6'>
+    <member type='relation' ref='3395656' role='' />
+    <member type='relation' ref='3235181' role='' />
+    <member type='relation' ref='130619' role='' />
+    <member type='relation' ref='3395655' role='' />
+    <tag k='name' v='Bus 92' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='92' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+  <relation id='3244666' timestamp='2014-01-04T21:10:12Z' user='aceman444' visible='true' version='2'>
+    <member type='relation' ref='3244664' role='' />
+    <member type='relation' ref='3244665' role='' />
+    <tag k='name' v='Bus 192' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='192' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+  <relation id='3421124' timestamp='2014-01-05T23:30:54Z' user='aceman444' visible='true' version='1'>
+    <member type='relation' ref='3421122' role='' />
+    <member type='relation' ref='3421123' role='' />
+    <tag k='name' v='Bus N95' />
+    <tag k='network' v='MHD Bratislava' />
+    <tag k='operator' v='DPB' />
+    <tag k='ref' v='N95' />
+    <tag k='route_master' v='bus' />
+    <tag k='type' v='route_master' />
+  </relation>
+</osm>
