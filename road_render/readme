@@ -1,7 +1,8 @@
 * umožni štýlovať cesty
 * zoom to center point
 * zoom to point
-* pridaj dalšie cesty
+* umožni kresliť rozne typy ciest (schody, cesty, chodniky)
+ok - * pridaj dalšie cesty
 ok - * zoom
 ok - * pan (posuvanie mapy)
 ok - * kresly cesty podla sajty s OSM

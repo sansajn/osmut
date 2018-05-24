@@ -18,7 +18,20 @@ enum class road_type  //!< see https://wiki.openstreetmap.org/wiki/Key:highway f
 	tertiary,
 	unclassified,
 	residential,
-	service
+	service,
+	living_street,
+	pedestrian,
+	track,
+	bus_guideway,
+	escape,
+	raceway,
+	road,
+	footway,
+	bridleway,
+	steps,
+	path,
+	cycleway,
+	construction,
 };
 
 struct road

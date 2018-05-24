@@ -53,7 +53,6 @@ class the_application : public agg::platform_support
 {
 public:
 	the_application(agg::pix_format_e format, bool flip_y, string const & osmfile);
-	void create_styles();
 	void on_init() override {}
 	void on_draw() override;
 	void on_mouse_button_down(int x, int y, unsigned flags) override;
@@ -61,28 +60,24 @@ public:
 	void on_key(int x, int y, unsigned key, unsigned flags) override;
 
 private:
+	road_style get_road_style(road_type t) const;
+
 	//	double m_x[3];
 	//	double m_y[3];
-	double m_dx;
-	double m_dy;
-	int    m_idx;
 	agg::rbox_ctrl<agg::rgba8> m_join;
 	agg::rbox_ctrl<agg::rgba8> m_cap;
 	agg::slider_ctrl<agg::rgba8> m_width;
 	agg::slider_ctrl<agg::rgba8> m_miter_limit;
 	box _roads_bbox;
 	vector<road> _roads;
-	vector<agg::rgba> _road_color;
-	vector<road_style> _style;
 	vec2 _origin;
 	vec2 _pan_begin;
 	int _zoom;  //!< from 1 to N
 };
 
+
 void the_application::on_draw()
 {
-	create_styles();
-
 	typedef agg::renderer_base<agg::pixfmt_bgr24> ren_base;
 
 	agg::pixfmt_bgr24 pixf(rbuf_window());
@@ -131,18 +126,19 @@ void the_application::on_draw()
 		}
 
 		// render
+		road_style style = get_road_style(r.type);
 
 		// outer line
 		agg::conv_stroke<agg::path_storage> outer{path};
-		outer.width(_style[(int)r.type].width);
+		outer.width(style.width);
 		ras.add_path(outer);
-		agg::render_scanlines_aa_solid(ras, sl, renb, _style[(int)r.type].color2);
+		agg::render_scanlines_aa_solid(ras, sl, renb, style.color2);
 
 		// inner line
 		agg::conv_stroke<agg::path_storage> inner{path};
-		inner.width(_style[(int)r.type].width - 2.0);
+		inner.width(style.width - 2.0);
 		ras.add_path(inner);
-		agg::render_scanlines_aa_solid(ras, sl, renb, _style[(int)r.type].color1);
+		agg::render_scanlines_aa_solid(ras, sl, renb, style.color1);
 	}
 
 /*
@@ -206,7 +202,6 @@ void the_application::on_draw()
 
 the_application::the_application(agg::pix_format_e format, bool flip_y, string const & osmfile)
 	: agg::platform_support(format, flip_y)
-	, m_idx(-1)
 	, m_join(10.0, 10.0, 133.0, 80.0, !flip_y)
 	, m_cap(10.0, 80.0 + 10.0, 133.0, 80.0 + 80.0, !flip_y)
 	, m_width(130 + 10.0, 10.0 + 4.0, 500.0 - 10.0, 10.0 + 8.0 + 4.0, !flip_y)
@@ -249,22 +244,53 @@ the_application::the_application(agg::pix_format_e format, bool flip_y, string c
 	m_miter_limit.no_transform();
 
 	read_roads(osmfile, _roads, _roads_bbox);
+
+	// stats
+	cout << "roads:" << _roads.size() << "\n";
 }
 
-void the_application::create_styles()
+road_style the_application::get_road_style(road_type t) const
 {
 	double base_width = m_width.value();
 
-	_style = {
-		road_style{agg::rgba{0.913725, 0.564706, 0.627451}, agg::rgba{0.803922, 0.325490, 0.180392}, base_width},  // motorway
-		road_style{agg::rgba{0.984314, 0.698039, 0.603922}, agg::rgba{0.670588, 0.482353, 0.011765}, base_width},  // trunk
-		road_style{agg::rgba{0.992157, 0.843137, 0.631373}, agg::rgba{0.486275, 0.537255, 0.000000}, base_width},  // primary
-		road_style{agg::rgba{1, 1, 1}, agg::rgba{0.678431, 0.678431, 0.678431}, base_width},  // secondary
-		road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, base_width},  // tertiary
-		road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.6*base_width},  // unclassified
-		road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.6*base_width},  // residential
-		road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.4*base_width}  // service
-	};
+	switch (t)
+	{
+		case road_type::motorway:
+			return road_style{agg::rgba{0.913725, 0.564706, 0.627451}, agg::rgba{0.803922, 0.325490, 0.180392}, base_width};
+
+		case road_type::trunk:
+			return road_style{agg::rgba{0.984314, 0.698039, 0.603922}, agg::rgba{0.670588, 0.482353, 0.011765}, base_width};
+
+		case road_type::primary:
+			return road_style{agg::rgba{0.992157, 0.843137, 0.631373}, agg::rgba{0.486275, 0.537255, 0.000000}, base_width};
+
+		case road_type::secondary:
+			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.678431, 0.678431, 0.678431}, base_width};
+
+		case road_type::tertiary:
+			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, base_width};
+
+		case road_type::residential:
+			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.6*base_width};
+
+		case road_type::service:
+			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.4*base_width};
+
+		case road_type::living_street:
+			return road_style{agg::rgba{0.929412, 0.929412, 0.929412}, agg::rgba{0.772549, 0.772549, 0.772549}, 0.4*base_width};
+
+		case road_type::pedestrian:
+			return road_style{agg::rgba{0.866667, 0.866667, 0.913725}, agg::rgba{0.654902, 0.647059, 0.650980}, 0.4*base_width};
+
+//		case road_type::footway:
+//			return road_style{agg::rgba{1, 0, 0}, agg::rgba{0, 0, 0}, 0.4*base_width};
+
+		case road_type::raceway:
+			return road_style{agg::rgba{1.000000, 0.752941, 0.792157}, agg::rgba{1.000000, 0.752941, 0.792157}, 0.4*base_width};
+
+		default:
+			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.6*base_width};
+	}
 }
 
 void the_application::on_mouse_button_down(int x, int y, unsigned flags)

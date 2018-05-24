@@ -107,8 +107,34 @@ road_type to_road_type(char const * value)
 		return road_type::residential;
 	else if (strcmp(value, "service") == 0)
 		return road_type::service;
+	else if (strcmp(value, "living_street") == 0)
+		return road_type::living_street;
+	else if (strcmp(value, "pedestrian") == 0)
+		return road_type::pedestrian;
+	else if (strcmp(value, "track") == 0)
+		return road_type::track;
+	else if (strcmp(value, "bus_guideway") == 0)
+		return road_type::bus_guideway;
+	else if (strcmp(value, "escape") == 0)
+		return road_type::escape;
+	else if (strcmp(value, "raceway") == 0)
+		return road_type::raceway;
+	else if (strcmp(value, "road") == 0)
+		return road_type::road;
+	else if (strcmp(value, "footway") == 0)
+		return road_type::footway;
+	else if (strcmp(value, "bridleway") == 0)
+		return road_type::bridleway;
+	else if (strcmp(value, "steps") == 0)
+		return road_type::steps;
+	else if (strcmp(value, "path") == 0)
+		return road_type::path;
+	else if (strcmp(value, "cycleway") == 0)
+		return road_type::cycleway;
+	else if (strcmp(value, "construction") == 0)
+		return road_type::construction;
 	else
-		return road_type::unclassified;
+		return road_type::road;  // generic road type
 }
 
 void road_reader::way(osmium::Way & w)
