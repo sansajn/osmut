@@ -3,7 +3,7 @@
 #include <boost/geometry.hpp>
 #include <glm/vec2.hpp>
 #include "agg_color_rgba.h"
-#include "glmadapt.hpp"
+#include "boost_geometry_adapt.hpp"
 
 using vec2 = glm::dvec2;
 using box = boost::geometry::model::box<vec2>;
