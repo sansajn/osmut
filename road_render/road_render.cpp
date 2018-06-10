@@ -20,19 +20,22 @@
 #include "platform/agg_platform_support.h"
 #include "ctrl/agg_slider_ctrl.h"
 #include "ctrl/agg_rbox_ctrl.h"
+#include <Magick++.h>
 #include "road.hpp"
+#include "pattern_renderer.hpp"
 
 using std::min;
 using std::max;
 using std::string;
+using std::vector;
 using std::cout;
 using boost::geometry::get;
 namespace bg = boost::geometry;
 
+using pixfmt = agg::pixfmt_rgb24;
 
 enum flip_y_e { flip_y = true };
 
-using std::vector;
 
 
 class to_window_transform
@@ -48,6 +51,61 @@ private:
 	double _k;
 };
 
+class road_symbolizer
+{
+public:
+	using ren_base = agg::renderer_base<pixfmt>;
+
+	road_symbolizer(ren_base & renb);
+	void width(double w);
+	void color(agg::rgba const & inner, agg::rgba const & outer);
+	void render(agg::path_storage & path);
+
+private:
+	double _w;
+	agg::rgba _inner, _outer;
+	ren_base & _renb;  // rendering_buffer
+};
+
+class pattern_line_symbolizer;
+
+
+class footway_symbolizer
+{
+public:
+	using ren_base = agg::renderer_base<pixfmt>;
+
+	footway_symbolizer(ren_base & renb);
+	void render(agg::path_storage & path);
+
+private:
+	ren_base & _dst;  // rendering_buffer
+	pattern_renderer<pixfmt> _ren;
+};
+
+footway_symbolizer::footway_symbolizer(ren_base & renb)
+	: _dst{renb}
+{
+	// load pattern
+	string const file_name = "3.ppm";
+
+	Magick::Blob pixels;
+	Magick::Image im{file_name};
+	im.write(&pixels, "RGB");
+	assert(pixels.length() == im.columns()*im.rows()*3);
+
+	agg::rendering_buffer patt_buf;
+	patt_buf.attach((uint8_t *)pixels.data(), im.columns(), im.rows(), im.columns()*3);
+	pixfmt patt{patt_buf};
+
+	_ren.pattern(patt);
+}
+
+void footway_symbolizer::render(agg::path_storage & path)
+{
+	_ren.render(_dst, path);
+}
+
 
 class the_application : public agg::platform_support
 {
@@ -62,8 +120,6 @@ public:
 private:
 	road_style get_road_style(road_type t) const;
 
-	//	double m_x[3];
-	//	double m_y[3];
 	agg::rbox_ctrl<agg::rgba8> m_join;
 	agg::rbox_ctrl<agg::rgba8> m_cap;
 	agg::slider_ctrl<agg::rgba8> m_width;
@@ -78,27 +134,14 @@ private:
 
 void the_application::on_draw()
 {
-	typedef agg::renderer_base<agg::pixfmt_bgr24> ren_base;
+	typedef agg::renderer_base<pixfmt> ren_base;
 
-	agg::pixfmt_bgr24 pixf(rbuf_window());
+	pixfmt pixf(rbuf_window());
 	ren_base renb(pixf);
 	renb.clear(agg::rgba(1, 1, 1));
 
 	agg::rasterizer_scanline_aa<> ras;
 	agg::scanline_p8 sl;
-
-//		agg::path_storage path;
-
-//		path.move_to(m_x[0], m_y[0]);
-//		path.line_to((m_x[0] + m_x[1]) / 2, (m_y[0] + m_y[1]) / 2); // This point is added only to check for numerical stability
-//		path.line_to(m_x[1], m_y[1]);
-//		path.line_to(m_x[2], m_y[2]);
-//		path.line_to(m_x[2], m_y[2]);                               // This point is added only to check for numerical stability
-
-//		path.move_to((m_x[0] + m_x[1]) / 2, (m_y[0] + m_y[1]) / 2);
-//		path.line_to((m_x[1] + m_x[2]) / 2, (m_y[1] + m_y[2]) / 2);
-//		path.line_to((m_x[2] + m_x[0]) / 2, (m_y[2] + m_y[0]) / 2);
-//		path.close_polygon();
 
 	agg::line_cap_e           cap = agg::butt_cap;
 	if(m_cap.cur_item() == 1) cap = agg::square_cap;
@@ -113,6 +156,8 @@ void the_application::on_draw()
 	to_window_transform T{width(), height(), _roads_bbox};
 	double zoom = (4.0 + _zoom) / 5.0;
 
+	footway_symbolizer footway{renb};
+
 	for (road const & r : _roads)
 	{
 		// data
@@ -126,73 +171,25 @@ void the_application::on_draw()
 		}
 
 		// render
-		road_style style = get_road_style(r.type);
 
-		// outer line
-		agg::conv_stroke<agg::path_storage> outer{path};
-		outer.width(style.width);
-		ras.add_path(outer);
-		agg::render_scanlines_aa_solid(ras, sl, renb, style.color2);
-
-		// inner line
-		agg::conv_stroke<agg::path_storage> inner{path};
-		inner.width(style.width - 2.0);
-		ras.add_path(inner);
-		agg::render_scanlines_aa_solid(ras, sl, renb, style.color1);
-	}
-
-/*
-	{  // render roads
-		agg::path_storage road_path;
-
-		to_window_transform T{800, 600, _roads_bbox};
-
-		for (road const & r : _roads)
+		switch (r.type)
 		{
-			point p0 = T*r.geometry[0];
-			road_path.move_to(get<0>(p0), get<1>(p0));
-			for (size_t i = 1; i < r.geometry.size(); ++i)
+			case road_type::footway:
 			{
-				point p = T*r.geometry[i];
-				road_path.line_to(get<0>(p), get<1>(p));
+				footway.render(path);
+				break;
+			}
+
+			default:
+			{
+				road_symbolizer symb{renb};
+				road_style style = get_road_style(r.type);
+				symb.width(style.width);
+				symb.color(style.color1, style.color2);
+				symb.render(path);
 			}
 		}
-
-		// (1)
-//			agg::conv_stroke<agg::path_storage> stroke{road_path};
-//			stroke.line_join(join);
-//			stroke.line_cap(cap);
-//			stroke.miter_limit(m_miter_limit.value());
-//			stroke.width(m_width.value());
-//			ras.add_path(stroke);
-//			agg::render_scanlines_aa_solid(ras, sl, renb, agg::rgba(0.8, 0.7, 0.6));
-		// (1)
-
-		// (2)
-		agg::conv_stroke<agg::path_storage> poly1{road_path};
-		poly1.width(1.5);
-		ras.add_path(poly1);
-		agg::render_scanlines_aa_solid(ras, sl, renb, agg::rgba(0,0,0));
-		// (2)
-
-		// (3)
-//			agg::conv_dash<agg::conv_stroke<agg::path_storage>> poly2_dash{stroke};
-//			agg::conv_stroke<agg::conv_dash<agg::conv_stroke<agg::path_storage>>> poly2{poly2_dash};
-//			poly2.miter_limit(4.0);
-//			poly2.width(m_width.value() / 5.0);
-//			poly2.line_cap(cap);
-//			poly2.line_join(join);
-//			poly2_dash.add_dash(20.0, m_width.value() / 2.5);
-//			ras.add_path(poly2);
-//			agg::render_scanlines_aa_solid(ras, sl, renb, agg::rgba(0,0,0.3));
-		// (3)
-
-		// (4)
-//			ras.add_path(road_path);
-//			agg::render_scanlines_aa_solid(ras, sl, renb, agg::rgba(0.0, 0.0, 0.0, 0.2));
-		// (4)
 	}
-*/
 
 	agg::render_ctrl(ras, sl, renb, m_join);
 	agg::render_ctrl(ras, sl, renb, m_cap);
@@ -209,10 +206,6 @@ the_application::the_application(agg::pix_format_e format, bool flip_y, string c
 	, _origin{0, 0}
 	, _zoom{1}
 {
-//		m_x[0] = 57  + 100; m_y[0] = 60;
-//		m_x[1] = 369 + 100; m_y[1] = 170;
-//		m_x[2] = 143 + 100; m_y[2] = 310;
-
 	add_ctrl(m_join);
 	m_join.text_size(7.5);
 	m_join.text_thickness(1.0);
@@ -265,7 +258,7 @@ road_style the_application::get_road_style(road_type t) const
 			return road_style{agg::rgba{0.992157, 0.843137, 0.631373}, agg::rgba{0.486275, 0.537255, 0.000000}, base_width};
 
 		case road_type::secondary:
-			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.678431, 0.678431, 0.678431}, base_width};
+			return road_style{agg::rgba{0.968627, 0.980392, 0.749020}, agg::rgba{0.450980, 0.494118, 0.094118}, 0.4*base_width};
 
 		case road_type::tertiary:
 			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, base_width};
@@ -289,6 +282,7 @@ road_style the_application::get_road_style(road_type t) const
 			return road_style{agg::rgba{1.000000, 0.752941, 0.792157}, agg::rgba{1.000000, 0.752941, 0.792157}, 0.4*base_width};
 
 		default:
+//			return road_style{agg::rgba{1, 0, 0}, agg::rgba{0, 0, 0}, 0.4*base_width};
 			return road_style{agg::rgba{1, 1, 1}, agg::rgba{0.788235, 0.772549, 0.772549}, 0.6*base_width};
 	}
 }
@@ -313,21 +307,6 @@ void the_application::on_mouse_move(int x, int y, unsigned flags)
 
 void the_application::on_key(int x, int y, unsigned key, unsigned flags)
 {
-//		double dx = 0;
-//		double dy = 0;
-//		switch(key)
-//		{
-//		case agg::key_left:  dx = -0.1; break;
-//		case agg::key_right: dx =  0.1; break;
-//		case agg::key_up:    dy =  0.1; break;
-//		case agg::key_down:  dy = -0.1; break;
-//		}
-//		m_x[0] += dx;
-//		m_y[0] += dy;
-//		m_x[1] += dx;
-//		m_y[1] += dy;
-//		force_redraw();
-
 	unsigned prev_zoom = _zoom;
 
 	switch (key)
@@ -355,11 +334,43 @@ vec2 to_window_transform::operator*(vec2 const & p) const
 		_k * (get<1>(p) - get<1>(_origin)) / _hd};
 }
 
+void road_symbolizer::render(agg::path_storage & path)
+{
+	agg::rasterizer_scanline_aa<> ras;
+	agg::scanline_p8 sl;
+
+	// outer line
+	agg::conv_stroke<agg::path_storage> outer{path};
+	outer.width(_w);
+	ras.add_path(outer);
+	agg::render_scanlines_aa_solid(ras, sl, _renb, _outer);
+
+	// inner line
+	agg::conv_stroke<agg::path_storage> inner{path};
+	inner.width(_w - 2.0);
+	ras.add_path(inner);
+	agg::render_scanlines_aa_solid(ras, sl, _renb, _inner);
+}
+
+road_symbolizer::road_symbolizer(ren_base & renb)
+	: _renb{renb}
+{}
+
+void road_symbolizer::width(double w)
+{
+	_w = w;
+}
+
+void road_symbolizer::color(agg::rgba const & inner, agg::rgba const & outer)
+{
+	_inner = inner;
+	_outer = outer;
+}
 
 
 int agg_main(int argc, char* argv[])
 {
-	the_application app(agg::pix_format_bgr24, flip_y, argc > 1 ? argv[1] : "../assets/maps/roads.osm");
+	the_application app(agg::pix_format_rgb24, flip_y, argc > 1 ? argv[1] : "../assets/maps/roads.osm");
 	app.caption("OSM road render sample");
 
 	if(app.init(1024, 768, 0))
