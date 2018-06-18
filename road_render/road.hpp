@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <string>
 #include <boost/geometry.hpp>
@@ -32,6 +33,7 @@ enum class road_type  //!< see https://wiki.openstreetmap.org/wiki/Key:highway f
 	path,
 	cycleway,
 	construction,
+	count  //!< number of road types
 };
 
 struct road

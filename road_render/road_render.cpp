@@ -20,9 +20,11 @@
 #include "platform/agg_platform_support.h"
 #include "ctrl/agg_slider_ctrl.h"
 #include "ctrl/agg_rbox_ctrl.h"
+#include <ctrl/agg_cbox_ctrl.h>
 #include <Magick++.h>
 #include "road.hpp"
-#include "pattern_renderer.hpp"
+#include "symbolizer.hpp"
+#include "transform.hpp"
 
 using std::min;
 using std::max;
@@ -32,79 +34,10 @@ using std::cout;
 using boost::geometry::get;
 namespace bg = boost::geometry;
 
-using pixfmt = agg::pixfmt_rgb24;
-
 enum flip_y_e { flip_y = true };
 
 
-
-class to_window_transform
-{
-public:
-	to_window_transform(int w, int h, box const & data_bounds);
-	vec2 operator*(vec2 const & p) const;
-
-private:
-	double _w, _h;
-	vec2 _origin;
-	double _wd, _hd;  //!< data width/height
-	double _k;
-};
-
-class road_symbolizer
-{
-public:
-	using ren_base = agg::renderer_base<pixfmt>;
-
-	road_symbolizer(ren_base & renb);
-	void width(double w);
-	void color(agg::rgba const & inner, agg::rgba const & outer);
-	void render(agg::path_storage & path);
-
-private:
-	double _w;
-	agg::rgba _inner, _outer;
-	ren_base & _renb;  // rendering_buffer
-};
-
 class pattern_line_symbolizer;
-
-
-class footway_symbolizer
-{
-public:
-	using ren_base = agg::renderer_base<pixfmt>;
-
-	footway_symbolizer(ren_base & renb);
-	void render(agg::path_storage & path);
-
-private:
-	ren_base & _dst;  // rendering_buffer
-	pattern_renderer<pixfmt> _ren;
-};
-
-footway_symbolizer::footway_symbolizer(ren_base & renb)
-	: _dst{renb}
-{
-	// load pattern
-	string const file_name = "3.ppm";
-
-	Magick::Blob pixels;
-	Magick::Image im{file_name};
-	im.write(&pixels, "RGB");
-	assert(pixels.length() == im.columns()*im.rows()*3);
-
-	agg::rendering_buffer patt_buf;
-	patt_buf.attach((uint8_t *)pixels.data(), im.columns(), im.rows(), im.columns()*3);
-	pixfmt patt{patt_buf};
-
-	_ren.pattern(patt);
-}
-
-void footway_symbolizer::render(agg::path_storage & path)
-{
-	_ren.render(_dst, path);
-}
 
 
 class the_application : public agg::platform_support
@@ -124,6 +57,7 @@ private:
 	agg::rbox_ctrl<agg::rgba8> m_cap;
 	agg::slider_ctrl<agg::rgba8> m_width;
 	agg::slider_ctrl<agg::rgba8> m_miter_limit;
+	agg::cbox_ctrl<agg::rgba8> _road_types_ctrl;
 	box _roads_bbox;
 	vector<road> _roads;
 	vec2 _origin;
@@ -195,6 +129,7 @@ void the_application::on_draw()
 	agg::render_ctrl(ras, sl, renb, m_cap);
 	agg::render_ctrl(ras, sl, renb, m_width);
 	agg::render_ctrl(ras, sl, renb, m_miter_limit);
+	agg::render_ctrl(ras, sl, renb, _road_types_ctrl);
 }
 
 the_application::the_application(agg::pix_format_e format, bool flip_y, string const & osmfile)
@@ -203,6 +138,7 @@ the_application::the_application(agg::pix_format_e format, bool flip_y, string c
 	, m_cap(10.0, 80.0 + 10.0, 133.0, 80.0 + 80.0, !flip_y)
 	, m_width(130 + 10.0, 10.0 + 4.0, 500.0 - 10.0, 10.0 + 8.0 + 4.0, !flip_y)
 	, m_miter_limit(130 + 10.0, 20.0 + 10.0 + 4.0, 500.0 - 10.0, 20.0 + 10.0 + 8.0 + 4.0, !flip_y)
+	, _road_types_ctrl{10.0, 180.0, "road:"}
 	, _origin{0, 0}
 	, _zoom{1}
 {
@@ -317,54 +253,6 @@ void the_application::on_key(int x, int y, unsigned key, unsigned flags)
 
 	if (_zoom != prev_zoom)
 		force_redraw();
-}
-
-to_window_transform::to_window_transform(int w, int h, box const & data_bounds)
-	: _w(w), _h(h), _origin{data_bounds.min_corner()}
-{
-	_wd = get<bg::max_corner, 0>(data_bounds) - get<bg::min_corner, 0>(data_bounds);
-	_hd = get<bg::max_corner, 1>(data_bounds) - get<bg::min_corner, 1>(data_bounds);
-	_k = min(_w, _h);
-}
-
-vec2 to_window_transform::operator*(vec2 const & p) const
-{
-	return vec2{
-		(_w - _k)/2.0 + (_k * (get<0>(p) - get<0>(_origin)) / _wd),
-		_k * (get<1>(p) - get<1>(_origin)) / _hd};
-}
-
-void road_symbolizer::render(agg::path_storage & path)
-{
-	agg::rasterizer_scanline_aa<> ras;
-	agg::scanline_p8 sl;
-
-	// outer line
-	agg::conv_stroke<agg::path_storage> outer{path};
-	outer.width(_w);
-	ras.add_path(outer);
-	agg::render_scanlines_aa_solid(ras, sl, _renb, _outer);
-
-	// inner line
-	agg::conv_stroke<agg::path_storage> inner{path};
-	inner.width(_w - 2.0);
-	ras.add_path(inner);
-	agg::render_scanlines_aa_solid(ras, sl, _renb, _inner);
-}
-
-road_symbolizer::road_symbolizer(ren_base & renb)
-	: _renb{renb}
-{}
-
-void road_symbolizer::width(double w)
-{
-	_w = w;
-}
-
-void road_symbolizer::color(agg::rgba const & inner, agg::rgba const & outer)
-{
-	_inner = inner;
-	_outer = outer;
 }
 
 

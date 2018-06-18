@@ -14,10 +14,20 @@ agg_lib = env.StaticLibrary('agg', [
 	Glob('agg-2.5/src/platform/X11/*.cpp')
 ])
 
-objs = env.Object(['road.cpp'])
+objs = env.Object(['road.cpp', 'transform.cpp'])
 
-env.Program(['road_render.cpp', objs, agg_lib])
+symbolizer_o = env.Object(['symbolizer.cpp'])  # can't be part of objs, why ?
+
+env.Program(['road_render.cpp', symbolizer_o, objs, agg_lib])
 env.Program(['conv_stroke.cpp', objs, agg_lib])
+
+
+# gtk3 based
+gtk3_env = env.Clone()
+gtk3_env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
+
+gtk3_env.Program(['roadview.cpp', symbolizer_o, objs, agg_lib])
+
 
 # unit tests
 env.Program(['test.cpp', Glob('test_*.cpp'), objs])
