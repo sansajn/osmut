@@ -173,6 +173,7 @@ void roadview_window::on_width_changed()
 {
 	road_type rtype = active_road_type();
 	_osm.get_road_style(rtype).width = _width_adj->get_value();
+	_osm.unselect();
 	queue_draw();  // redraw
 }
 
@@ -182,6 +183,7 @@ void roadview_window::on_inner_color_changed()
 
 	Gdk::RGBA c = _c1_btn.get_rgba();
 	_osm.get_road_style(rtype).color1 = agg::rgba{c.get_red(), c.get_green(), c.get_blue()};
+	_osm.unselect();
 
 	queue_draw();  // redraw
 }
@@ -192,6 +194,7 @@ void roadview_window::on_outer_color_changed()
 
 	Gdk::RGBA c = _c2_btn.get_rgba();
 	_osm.get_road_style(rtype).color2 = agg::rgba{c.get_red(), c.get_green(), c.get_blue()};
+	_osm.unselect();
 
 	queue_draw();  // redraw
 }

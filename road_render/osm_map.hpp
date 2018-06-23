@@ -15,6 +15,7 @@ public:
 	void from_file(std::string const & osm_file);
 	void zoom(double v) {_zoom = v;}
 	void select(road_type r);
+	void unselect();
 	road_style & get_road_style(road_type t);
 	road_style const & get_road_style(road_type t) const;
 

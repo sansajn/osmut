@@ -63,15 +63,15 @@ void osm_map::render(ren_base & dst)
 		}
 
 		// render
-//		if (r.type == _selected)
-//		{
-//			road_style style{agg::rgba{1, 0, 0}, agg::rgba{0, 0, 0}, 10.0};
-//			road_symbolizer symb{dst};
-//			symb.width(style.width);
-//			symb.color(style.color1, style.color2);
-//			symb.render(path);
-//		}
-//		else
+		if (r.type == _selected)
+		{
+			road_style style{agg::rgba{1, 0, 0}, agg::rgba{0, 0, 0}, 10.0};
+			road_symbolizer symb{dst};
+			symb.width(style.width);
+			symb.color(style.color1, style.color2);
+			symb.render(path);
+		}
+		else
 		{
 			switch (r.type)
 			{
@@ -102,6 +102,11 @@ void osm_map::from_file(std::string const & osm_file)
 void osm_map::select(road_type r)
 {
 	_selected = r;
+}
+
+void osm_map::unselect()
+{
+	_selected = road_type::count;
 }
 
 road_style & osm_map::get_road_style(road_type t)
