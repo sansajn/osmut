@@ -26,7 +26,11 @@ env.Program(['conv_stroke.cpp', objs, agg_lib])
 gtk3_env = env.Clone()
 gtk3_env.ParseConfig('pkg-config gtkmm-3.0 --cflags --libs')
 
-gtk3_env.Program(['roadview.cpp', symbolizer_o, objs, agg_lib])
+gtk3_env.Program('roadview', [
+	'roadview.cpp',
+	'osm_map.cpp',
+	'map_area.cpp',
+	symbolizer_o, objs, agg_lib])
 
 
 # unit tests
