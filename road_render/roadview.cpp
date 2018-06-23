@@ -41,6 +41,9 @@ private:
 	Gtk::TreeModel::Row add_road_type(Glib::ustring const & s, unsigned rid);
 	void on_combo_changed();
 	void on_width_changed();
+	void on_inner_color_changed();
+	void on_outer_color_changed();
+	road_type active_road_type() const;
 
 	road_model_columns _road_combo_columns;
 	Glib::RefPtr<Gtk::ListStore> _road_model;
@@ -106,9 +109,13 @@ roadview_window::roadview_window()
 	_width_box.pack_start(_width_scale);
 	_edit_box.add(_width_box);
 
+	_c1_btn.signal_color_set().connect(sigc::mem_fun(*this, &roadview_window::on_inner_color_changed));
+
 	_color1_box.pack_start(*Gtk::manage(new Gtk::Label{"Inner color:"}), Gtk::PACK_SHRINK);
 	_color1_box.pack_start(_c1_btn);
 	_color_box.add(_color1_box);
+
+	_c2_btn.signal_color_set().connect(sigc::mem_fun(*this, &roadview_window::on_outer_color_changed));
 
 	_color2_box.pack_start(*Gtk::manage(new Gtk::Label{"Outer color:"}), Gtk::PACK_SHRINK);
 	_color2_box.pack_start(_c2_btn);
@@ -164,24 +171,45 @@ void roadview_window::on_combo_changed()
 
 void roadview_window::on_width_changed()
 {
-	// zisti aky typ cesty je zvoleny
+	road_type rtype = active_road_type();
+	_osm.get_road_style(rtype).width = _width_adj->get_value();
+	queue_draw();  // redraw
+}
+
+void roadview_window::on_inner_color_changed()
+{
+	road_type rtype = active_road_type();
+
+	Gdk::RGBA c = _c1_btn.get_rgba();
+	_osm.get_road_style(rtype).color1 = agg::rgba{c.get_red(), c.get_green(), c.get_blue()};
+
+	queue_draw();  // redraw
+}
+
+void roadview_window::on_outer_color_changed()
+{
+	road_type rtype = active_road_type();
+
+	Gdk::RGBA c = _c2_btn.get_rgba();
+	_osm.get_road_style(rtype).color2 = agg::rgba{c.get_red(), c.get_green(), c.get_blue()};
+
+	queue_draw();  // redraw
+}
+
+road_type roadview_window::active_road_type() const
+{
 	Gtk::TreeModel::iterator it = _road_combo.get_active();
 	if (!it)
-		return;
+		throw std::logic_error{"unable to get road_type"};
 
 	Gtk::TreeModel::Row row = *it;
 	if (!row)
-		return;
+		throw std::logic_error{"unable to get road_type"};
 
 	int rid = row[_road_combo_columns.rid];
 	assert(rid < (int)road_type::count);
 
-	// zmen sirku cesty danneho stylu
-	_osm.get_road_style((road_type)rid).width = _width_adj->get_value();
-
-	queue_draw();  // redraw
-
-	cout << "width changed" << std::endl;
+	return (road_type)rid;
 }
 
 bool write_ppm(const unsigned char* buf,
