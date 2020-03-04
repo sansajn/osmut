@@ -1,3 +1,9 @@
+{road_render}
+
+Pokus o renderovanie cies postaveny na knizniciach osmium a agg. Za zmienku tu stoji implementacia citania ciest, pozri `road.hpp`.
+
+
+
 {graph}
 
 graph_dijkstra : vygeneruje graf umožnujúci prehľadávanie jednosmerným
